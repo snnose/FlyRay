@@ -7,12 +7,12 @@ public class CameraControl : MonoBehaviour
     private GameObject player = null;
     private Vector3 posDiff = Vector3.zero;
 
-    private PlayerRoot playerRoot;
+    private GameRoot playerRoot;
 
     // Start is called before the first frame update
     void Start()
     {
-        playerRoot = gameObject.AddComponent<PlayerRoot>() as PlayerRoot;
+        playerRoot = gameObject.AddComponent<GameRoot>() as GameRoot;
         this.player = GameObject.FindGameObjectWithTag("Player");
 
         this.posDiff = this.transform.position - player.transform.position;
@@ -36,18 +36,18 @@ public class CameraControl : MonoBehaviour
         // 카메라가 우주선을 따라간다.
         switch(playerRoot.playerControl.currState)
         {
-            case PlayerControl.Player.state.FLIED:
+            case PlayerControl.PlayerInfo.state.FLIED:
                 this.transform.position =
                     Vector3.Lerp(this.transform.position, newPos + posDiff, Time.deltaTime * 15f);
                 //Debug.Log("카메라 FLIED 진입");
                 break;
 
-            case PlayerControl.Player.state.LANDED:
+            case PlayerControl.PlayerInfo.state.LANDED:
                 this.transform.position = 
                     Vector3.Lerp(this.transform.position, newPos + posDiff, Time.deltaTime * 15f);
                 //Debug.Log("카메라 LANDED 진입");
                 break;
-            case PlayerControl.Player.state.STOP:
+            case PlayerControl.PlayerInfo.state.STOP:
                 this.transform.position =
                     Vector3.Lerp(this.transform.position, newPos + posDiff, Time.deltaTime * 15f);
                 break;

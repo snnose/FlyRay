@@ -3,7 +3,13 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Waffle
+  - Map
+  - Background
+  - Ground
+  - Canvas
+  - FuelUI
   layers:
   - Default
   - TransparentFX

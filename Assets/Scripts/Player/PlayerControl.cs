@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerControl : MonoBehaviour
 {    
-    public class Player
+    public class PlayerInfo
     {
         // 플레이어의 상태 표시
         public enum state
@@ -16,86 +16,107 @@ public class PlayerControl : MonoBehaviour
             STOP,           // 완전 정지 시
         };
 
+        // 연료양
+        private float fuelAmount = 100.0f;
+
+        public float GetFuelAmount()
+        {
+            return this.fuelAmount;
+        }
     }
 
-    public Player.state currState = Player.state.IDLE;
+    public PlayerInfo.state currState = PlayerInfo.state.IDLE;
     public bool isOnGround = false;
+
+    public GameObject player;
+    private Rigidbody2D playerRb2D;
+
+    private PlayerInfo playerInfo;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        player = GameObject.FindGameObjectWithTag("Player");
+        playerRb2D = player.GetComponent<Rigidbody2D>();
+
+        playerInfo = new PlayerInfo();
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+    
+            
     }
 
-    public bool isIdle()
+    public bool IsIdle()
     {
         bool ret = false;
 
-        if (this.currState == Player.state.IDLE)
+        if (this.currState == PlayerInfo.state.IDLE)
             ret = true;
 
         return ret;
     }
 
-    public bool isGrab()
+    public bool IsGrab()
     {
         bool ret = false;
 
-        if (this.currState == Player.state.GRABED)
+        if (this.currState == PlayerInfo.state.GRABED)
             ret = true;
 
         return ret;
     }
 
-    public bool isFly()
+    public bool IsFly()
     {
         bool ret = false;
 
-        if (this.currState == Player.state.FLIED)
+        if (this.currState == PlayerInfo.state.FLIED)
             ret = true;
 
         return ret;
     }
 
-    public bool isLand()
+    public bool IsLand()
     {
         bool ret = false;
 
-        if (this.currState == Player.state.LANDED)
+        if (this.currState == PlayerInfo.state.LANDED)
             ret = true;
 
         return ret;
     }
 
-    public void beginFly()
+    public void BeginFly()
     {
-        this.currState = Player.state.FLIED;
+        this.currState = PlayerInfo.state.FLIED;
     }
 
-    public void beginGrab()
+    public void BeginGrab()
     {
-        this.currState = Player.state.GRABED;
+        this.currState = PlayerInfo.state.GRABED;
     }
 
-    public void beginLand()
+    public void BeginLand()
     {
-        this.currState = Player.state.LANDED;
+        this.currState = PlayerInfo.state.LANDED;
     }
 
-    public void beginStop()
+    public void BeginStop()
     {
-        this.currState = Player.state.STOP;
+        this.currState = PlayerInfo.state.STOP;
+    }
+
+    public PlayerInfo GetPlayerInfo()
+    {
+        return this.playerInfo;
     }
 
     private void OnTriggerEnter2D(Collider2D collider)
     {
-        if (this.currState == Player.state.FLIED &&
+        if (this.currState == PlayerInfo.state.FLIED &&
             collider.gameObject.CompareTag("Waffle"))
         {
             //Debug.Log("와플 냠냠");
@@ -105,7 +126,7 @@ public class PlayerControl : MonoBehaviour
 
     private void OnCollisionStay2D(Collision2D collision)
     {
-        if(this.currState == Player.state.FLIED &&
+        if(this.currState == PlayerInfo.state.FLIED &&
             collision.collider.gameObject.CompareTag("Ground"))
         {
             this.isOnGround = true;
@@ -114,7 +135,7 @@ public class PlayerControl : MonoBehaviour
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if(this.currState == Player.state.LANDED &&
+        if(this.currState == PlayerInfo.state.LANDED &&
             collision.collider.gameObject.CompareTag("Ground"))
         {
             this.isOnGround = false;

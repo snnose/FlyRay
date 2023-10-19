@@ -30,12 +30,10 @@ public class SpawnManager : MonoBehaviour
 
     private void Update()
     {
-        if (!isExcute && player.GetComponent<PlayerControl>().isFly())
+        if (!isExcute && player.GetComponent<PlayerControl>().IsFly())
         {
             isExcute = true;
             InvokeRepeating("spawnObjects", spawnDelay, spawnInterval[0]);
-
-            Debug.Log("½ÇÇà");
         }
     }
 
@@ -47,7 +45,7 @@ public class SpawnManager : MonoBehaviour
 
         Vector3 spawnLocation = new Vector3(xSpawnPos, ySpawnPos, 0);
 
-        if (player.GetComponent<PlayerControl>().isFly())
+        if (player.GetComponent<PlayerControl>().IsFly())
         {
             GameObject copy = Instantiate(objectPrefabs[0], spawnLocation,
                 objectPrefabs[0].transform.rotation);
