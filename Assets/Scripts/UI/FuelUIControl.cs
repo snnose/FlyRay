@@ -9,24 +9,11 @@ public class FuelUIControl : MonoBehaviour
     public TextMeshProUGUI fuelName;
     public Image fuelGage;
 
-    private GameObject canvas;
-    private GameObject fuelUI;
-
-    private float canvasX;
-    private float canvasY;
-
     // Start is called before the first frame update
     void Start()
     {
-        canvas = GameObject.FindGameObjectWithTag("Canvas");
-        fuelUI = GameObject.FindGameObjectWithTag("FuelUI");
-
-        canvasX = canvas.transform.position.x;
-        canvasY = canvas.transform.position.y;
-
-        this.transform.position += new Vector3(-canvasX * 0.65f,
-                                               -canvasY * 0.9f);
-        fuelName.transform.position += new Vector3(0f, 20f);
+        this.transform.position = new Vector3(Screen.width * 0.125f, Screen.height * 0.05f);
+        fuelName.transform.position += new Vector3(0f, 40f);
 
         fuelName.text = "Fuel";
     }

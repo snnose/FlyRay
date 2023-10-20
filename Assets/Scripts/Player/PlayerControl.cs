@@ -19,9 +19,22 @@ public class PlayerControl : MonoBehaviour
         // 연료양
         private float fuelAmount = 100.0f;
 
+        // 얻은 와플 수
+        private int waffleCollected = 0;
+
+        public void GainWaffle()
+        {
+            this.waffleCollected++;
+        }
+
         public float GetFuelAmount()
         {
             return this.fuelAmount;
+        }
+
+        public int GetWaffleCollected()
+        {
+            return this.waffleCollected;
         }
     }
 
@@ -89,6 +102,16 @@ public class PlayerControl : MonoBehaviour
         return ret;
     }
 
+    public bool IsStop()
+    {
+        bool ret = false;
+
+        if (this.currState == PlayerInfo.state.STOP)
+            ret = true;
+
+        return ret;
+    }
+
     public void BeginFly()
     {
         this.currState = PlayerInfo.state.FLIED;
@@ -119,7 +142,7 @@ public class PlayerControl : MonoBehaviour
         if (this.currState == PlayerInfo.state.FLIED &&
             collider.gameObject.CompareTag("Waffle"))
         {
-            //Debug.Log("와플 냠냠");
+            playerInfo.GainWaffle(); // 얻은 와플 수 + 1
             Destroy(collider.gameObject);
         }
     }

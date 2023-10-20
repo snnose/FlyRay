@@ -17,7 +17,7 @@ public class GameRoot : MonoBehaviour
 
     private PlayerControl.PlayerInfo playerInfo;
     private Image fuelGage;
-    private float fuelAmount;
+    public float fuelAmount;
 
     private Vector2 minPos = Vector2.zero;
     private List<Vector2> posList;
@@ -37,6 +37,7 @@ public class GameRoot : MonoBehaviour
 
         playerInfo = playerControl.GetPlayerInfo();
         fuelGage = fuelUIControl.GetFuelGage();
+
         fuelAmount = playerInfo.GetFuelAmount();
         posList = new List<Vector2>();
     }
@@ -114,7 +115,7 @@ public class GameRoot : MonoBehaviour
                     Quaternion.Euler(0f, 0f, -0.1f);
             }
 
-            if (Input.GetKey(KeyCode.Space))
+            if (Input.GetKey(KeyCode.Space) && fuelAmount > 0)
             {
                 // 현재 바라보는 방향을 계산
                 Vector2 dir = CalDir();
@@ -122,7 +123,6 @@ public class GameRoot : MonoBehaviour
                 playerRb2D.AddForce(dir * 2f, ForceMode2D.Force);
 
                 fuelAmount -= Time.deltaTime * 100f;
-                Debug.Log(fuelAmount);
                 ChangeFuelGageAmount(fuelAmount / 100);
             }
 
@@ -142,7 +142,7 @@ public class GameRoot : MonoBehaviour
 
     Vector2 findMinPos()
     {
-        Vector2 minPos = Vector2.zero;
+        Vector2 mPos = Vector2.zero;
         int lastNum = posList.Count;
 
         for (int i = lastNum - 1; i > 0; i--)
@@ -151,13 +151,13 @@ public class GameRoot : MonoBehaviour
 
             if (posList[i - 1].x > posList[i].x || posList[i - 1].y > posList[i].y)
             {
-                minPos = posList[i];
+                mPos = posList[i];
                 break;
             }
         }
 
         posList.Clear();
-        return minPos;
+        return mPos;
     }
 
     private Vector2 CalDir()
