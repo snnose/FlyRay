@@ -17,10 +17,11 @@ public class GameRoot : MonoBehaviour
 
     private PlayerControl.PlayerInfo playerInfo;
     private Image fuelGage;
-    public float fuelAmount;
 
-    private Vector2 minPos = Vector2.zero;
-    private List<Vector2> posList;
+
+    private float fuelAmount = 0f;
+    private int throwTime = 0;
+    private List<Vector2> posList = new List<Vector2>();
 
     // Start is called before the first frame update
     void Start()
@@ -39,25 +40,25 @@ public class GameRoot : MonoBehaviour
         fuelGage = fuelUIControl.GetFuelGage();
 
         fuelAmount = playerInfo.GetFuelAmount();
-        posList = new List<Vector2>();
     }
 
     // Update is called once per frame
     void Update()
     {
         // 마우스 왼쪽 버튼 입력 시
-        if (Input.GetMouseButtonDown(0) && playerControl.IsIdle())
+        if (playerControl.IsIdle())
         {
-            Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero, 0f);
-
-            if (hit.collider != null && hit.collider.tag == "Player")
+            playerRb2D.freezeRotation = true;
+            if (Input.GetMouseButtonDown(0))
             {
-                playerControl.BeginGrab();
-            }
+                Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero, 0f);
 
-            // 디버깅 출력
-            //Debug.Log("현재 상태 : " + playerControl.currState);
+                if (hit.collider != null && hit.collider.tag == "Player")
+                {
+                    playerControl.BeginGrab();
+                }
+            }
         }
 
         // 마우스 왼쪽 버튼 드래깅 시
@@ -76,51 +77,34 @@ public class GameRoot : MonoBehaviour
             {
                 // 플레이어가 날기 시작한다.
                 playerControl.BeginFly();
+                playerRb2D.freezeRotation = false;
 
-                Vector2 minPos = findMinPos();
+                throwTime = 0;
+                Vector2 minPos = findMinPos(posList);
                 Vector2 lastPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                //int throwTime = 0;
-
+               
                 // 던지는 방향 벡터 계산
                 Vector2 throwVector = lastPos - minPos;
-
+                // 던진 시간이 짧을 수록 던지는 힘이 강하도록
                 // 플레이어에 힘을 가한다
-                playerRb2D.AddForce(throwVector * 3, ForceMode2D.Impulse);
-
-                // 디버깅 출력
-                //Debug.Log("minPos = (" + minPos.x + ", " + minPos.y +
-                //    ") / lastPos = (" + lastPos.x + ", " + lastPos.y +
-                //    ")");
-
-                //Debug.Log("현재 상태 : " + playerControl.currState);
+                playerRb2D.AddForce(throwVector * ((throwTime + 50) / throwTime), ForceMode2D.Impulse);
             }
         }
 
         // 비행 상태 중
         if (playerControl.IsFly())
         {
-            // 점점 아래로 기운다
-            player.transform.rotation *=
-                Quaternion.Euler(0f, 0f, -0.02f);
-
-            if (Input.GetKey(KeyCode.W))
-            {
-                player.transform.rotation *=
-                    Quaternion.Euler(0f, 0f, 0.1f);
-            }
-
-            if (Input.GetKey(KeyCode.S))
-            {
-                player.transform.rotation *=
-                    Quaternion.Euler(0f, 0f, -0.1f);
-            }
+            // 던지는 방향을 향하도록 플레이어를 회전시킨다.
+            float rotateZ = CalRotateZ(new Vector2(playerRb2D.velocity.x, playerRb2D.velocity.y));
+            player.transform.rotation = Quaternion.Euler(0f, 180f, -rotateZ);
 
             if (Input.GetKey(KeyCode.Space) && fuelAmount > 0)
             {
-                // 현재 바라보는 방향을 계산
-                Vector2 dir = CalDir();
+                Vector2 F = Vector2.one;
+                F.y *= 2f;
+
                 // 힘을 가한다
-                playerRb2D.AddForce(dir * 2f, ForceMode2D.Force);
+                playerRb2D.AddForce(F, ForceMode2D.Force);
 
                 fuelAmount -= Time.deltaTime * 100f;
                 ChangeFuelGageAmount(fuelAmount / 100);
@@ -131,25 +115,33 @@ public class GameRoot : MonoBehaviour
                 playerControl.BeginLand();
         }
 
-        // 땅에 떨어지고 멈췄다면
-        if (playerControl.IsLand() && playerRb2D.velocity == Vector2.zero)
+        // 땅에 떨어졌다면
+        if (playerControl.IsLand())
         {
-            playerControl.BeginStop();
+            // 회전 속도를 줄인 후 강제로 똑바로 서게 끔 조정한다.
+            playerRb2D.angularVelocity *= 0.1f;
 
-            //Debug.Log("현재 상태 : " + playerControl.currState);
+            if (player.transform.rotation.z == 0f)
+                playerRb2D.freezeRotation = true;
+
+            // 우주선이 멈췄다면
+            if (playerRb2D.velocity == Vector2.zero)
+            {
+                playerControl.BeginStop();
+            }
         }
     }
 
-    Vector2 findMinPos()
+    Vector2 findMinPos(List<Vector2> posList)
     {
         Vector2 mPos = Vector2.zero;
         int lastNum = posList.Count;
 
         for (int i = lastNum - 1; i > 0; i--)
         {
-            //throwTime++;
+            throwTime++;
 
-            if (posList[i - 1].x > posList[i].x || posList[i - 1].y > posList[i].y)
+            if (posList[i - 1].x > posList[i].x && posList[i - 1].y > posList[i].y)
             {
                 mPos = posList[i];
                 break;
@@ -160,11 +152,21 @@ public class GameRoot : MonoBehaviour
         return mPos;
     }
 
+    private float CalRotateZ(Vector2 v)
+    {
+        float f = 0f;
+        Vector2 normV = v.normalized;
+
+        f = Mathf.Atan2(normV.y ,normV.x) * Mathf.Rad2Deg;
+
+        return f;
+    }
+
     private Vector2 CalDir()
     {
         Vector2 dir = Vector2.one;
-        float dirX = dir.x * Mathf.Cos(player.transform.rotation.z);
-        float dirY = dir.y * Mathf.Sin(player.transform.rotation.z);
+        float dirX = dir.x * Mathf.Cos(-player.transform.rotation.z);
+        float dirY = dir.y * Mathf.Sin(-player.transform.rotation.z);
 
         dir = new Vector2(dirX, dirY);
 

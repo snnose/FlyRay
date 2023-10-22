@@ -139,11 +139,19 @@ public class PlayerControl : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collider)
     {
-        if (this.currState == PlayerInfo.state.FLIED &&
-            collider.gameObject.CompareTag("Waffle"))
+        if (this.currState == PlayerInfo.state.FLIED)
         {
-            playerInfo.GainWaffle(); // 얻은 와플 수 + 1
-            Destroy(collider.gameObject);
+            if (collider.gameObject.CompareTag("Waffle"))
+            {
+                playerInfo.GainWaffle(); // 얻은 와플 수 + 1
+                Destroy(collider.gameObject);
+            }
+            else if (collider.gameObject.CompareTag("Maro"))
+            {
+                Destroy(collider.gameObject);
+                
+                playerRb2D.AddForce(new Vector2(10, 10), ForceMode2D.Impulse); 
+            }
         }
     }
 

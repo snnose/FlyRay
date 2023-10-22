@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class SceneControl : MonoBehaviour
 {
@@ -9,7 +10,7 @@ public class SceneControl : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        wafflePrefab = Resources.Load("Prefabs/Waffle") as GameObject;
+        wafflePrefab = Resources.Load("Prefabs/Object/Waffle") as GameObject;
 
         SetResolution();
         init();

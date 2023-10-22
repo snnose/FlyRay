@@ -20,6 +20,7 @@ public class UIControl : MonoBehaviour
     void Start()
     {
         AttachComponents();
+        resultUI.gameObject.SetActive(false);
     }
 
     // Update is called once per frame
@@ -79,9 +80,8 @@ public class UIControl : MonoBehaviour
         Rigidbody2D playerRb2D = player.GetComponent<Rigidbody2D>();
 
         float currPosX = player.transform.position.x + 5f;
-        float currPosY = player.transform.position.y - 3f;
-        float velocity = Mathf.Sqrt(Mathf.Pow(playerRb2D.velocity.x, 2f) +
-                                    Mathf.Pow(playerRb2D.velocity.y, 2f));
+        float currPosY = player.transform.position.y - 2.76f;
+        float velocity = playerRb2D.velocity.x;
 
         DVAUIControl.distanceText.text = "Distance : " + Mathf.Ceil(currPosX * 100) / 100 + " m";
         DVAUIControl.velocityText.text = "Velocity : " + Mathf.Ceil(velocity * 100) / 100 + " m/s";

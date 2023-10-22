@@ -22,7 +22,7 @@ public class SpawnManager : MonoBehaviour
     {
         player = GameObject.FindGameObjectWithTag("Player");
 
-        spawnInterval = new List<float>(new float[] { 0.1f });
+        spawnInterval = new List<float>(new float[] { 0.1f , 0.5f});
 
         yScreenHalfSize = Camera.main.orthographicSize;
         xScreenHalfSize = yScreenHalfSize * Camera.main.aspect;
@@ -33,22 +33,42 @@ public class SpawnManager : MonoBehaviour
         if (!isExcute && player.GetComponent<PlayerControl>().IsFly())
         {
             isExcute = true;
-            InvokeRepeating("spawnObjects", spawnDelay, spawnInterval[0]);
+            InvokeRepeating("SpawnWaffle", spawnDelay, spawnInterval[0]);
+            InvokeRepeating("SpawnMaro", spawnDelay, spawnInterval[1]);
         }
     }
 
-    void spawnObjects()
+    void SpawnWaffle()
     {
         float xSpawnPos = player.transform.position.x + 
                             xScreenHalfSize * 2 + Random.Range(1, 10);
-        float ySpawnPos = player.transform.position.y + Random.Range(-10, 10);
+        float ySpawnPos = player.transform.position.y + 
+                            Random.Range(-player.transform.position.y + 2, 20);
 
         Vector3 spawnLocation = new Vector3(xSpawnPos, ySpawnPos, 0);
 
-        if (player.GetComponent<PlayerControl>().IsFly())
+        if (player.GetComponent<PlayerControl>().IsFly() ||
+            player.GetComponent<PlayerControl>().IsLand())
         {
             GameObject copy = Instantiate(objectPrefabs[0], spawnLocation,
                 objectPrefabs[0].transform.rotation);
+        }
+    }
+
+    void SpawnMaro()
+    {
+        float xSpawnPos = player.transform.position.x +
+                            xScreenHalfSize * 2 + Random.Range(1, 10);
+        float ySpawnPos = player.transform.position.y +
+                            Random.Range(-player.transform.position.y + 2, 20);
+
+        Vector3 spawnLocation = new Vector3(xSpawnPos, ySpawnPos, 0);
+
+        if (player.GetComponent<PlayerControl>().IsFly() ||
+            player.GetComponent<PlayerControl>().IsLand())
+        {
+            GameObject copy = Instantiate(objectPrefabs[1], spawnLocation,
+                objectPrefabs[1].transform.rotation);
         }
     }
 }
