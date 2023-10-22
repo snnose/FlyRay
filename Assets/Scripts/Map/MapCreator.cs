@@ -5,52 +5,29 @@ using UnityEngine;
 public class MapCreator : MonoBehaviour
 {
     public GameObject player;
-    public GameObject backGroundPrefab;
-    public GameObject groundPrefab;
+    public GameObject mapPrefab;
 
-    float initRightPosX = 0f;
-    float xScreenHalfSize;
-    float yScreenHalfSize;
-
-    Vector3 currGroundPos;
-    Vector3 currBackGroundPos;
-
-    float currRightPosX = 0f;
+    Vector2 currMapPos;
 
     // Start is called before the first frame update
     void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player");
 
-        yScreenHalfSize = Camera.main.orthographicSize;
-        xScreenHalfSize = yScreenHalfSize * Camera.main.aspect;
-
-        // 게임 시작 화면의 좌측 우측 좌표
-        currRightPosX = initRightPosX = xScreenHalfSize * 2 - 1;
-
-        currGroundPos = groundPrefab.transform.position;
-        currBackGroundPos = backGroundPrefab.transform.position;
+        currMapPos = this.transform.position;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (player.transform.position.x > currRightPosX)
+        if (player.transform.position.x > currMapPos.x)
         {
-            //Debug.Log("rightPosX = " + currRightPosX);
-            currRightPosX += initRightPosX * 2;
+            currMapPos.x += this.GetComponent<BoxCollider2D>().size.x;
 
             GameObject go1 =
-                Instantiate(groundPrefab) as GameObject;
+                Instantiate(mapPrefab) as GameObject;
 
-            GameObject go2 =
-                Instantiate(backGroundPrefab) as GameObject;
-
-            currGroundPos.x += groundPrefab.GetComponent<BoxCollider2D>().size.x;
-            currBackGroundPos.x += backGroundPrefab.GetComponent<BoxCollider2D>().size.x;
-
-            go1.transform.position = currGroundPos;
-            go2.transform.position = currBackGroundPos;
+            go1.transform.position = currMapPos;
         }
     }
 }

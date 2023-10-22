@@ -4,12 +4,15 @@ using UnityEngine;
 
 public class MapDelete : MonoBehaviour
 {
-    GameObject player;
+    private GameObject player;
+
+    private BoxCollider2D mapCollider2D;
 
     // Start is called before the first frame update
     void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player");
+        mapCollider2D = this.GetComponent<BoxCollider2D>();
     }
 
     // Update is called once per frame
@@ -25,7 +28,8 @@ public class MapDelete : MonoBehaviour
     {
         bool ret = false;
 
-        if (this.transform.position.x + 23.7 < player.transform.position.x - 23.7)
+        if (this.transform.position.x + (mapCollider2D.size.x / 2) <
+            player.transform.position.x - (mapCollider2D.size.x / 2))            
             ret = true;
 
         return ret;
