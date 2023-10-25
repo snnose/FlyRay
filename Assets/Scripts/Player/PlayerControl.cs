@@ -160,7 +160,6 @@ public class PlayerControl : MonoBehaviour
             {
                 Destroy(collider.gameObject);
                 
-
                 if (!maroTrigger)
                 {   
                     maroPush = MaroPush();
