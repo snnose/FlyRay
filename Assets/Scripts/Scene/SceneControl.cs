@@ -27,7 +27,7 @@ public class SceneControl : MonoBehaviour
         for (int i = 0; i < 3; i++)
         {
             Vector3 spawnLocation =
-                new Vector3(Random.Range(-3, 10), Random.Range(4, 12), 0);
+                new Vector3(Random.Range(1, 10), Random.Range(4, 12), 0);
 
             Instantiate(wafflePrefab, spawnLocation, wafflePrefab.transform.rotation);
         }

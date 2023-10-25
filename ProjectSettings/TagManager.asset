@@ -13,6 +13,8 @@ TagManager:
   - DVAUI
   - ResultUI
   - GameRoot
+  - Maro
+  - AudioManager
   layers:
   - Default
   - TransparentFX

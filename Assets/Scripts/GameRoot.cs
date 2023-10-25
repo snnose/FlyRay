@@ -10,10 +10,9 @@ public class GameRoot : MonoBehaviour
     private GameObject fuelUI;
 
     public PlayerControl playerControl;
-    public FuelUIControl fuelUIControl;
+    private FuelUIControl fuelUIControl;
 
     private Rigidbody2D playerRb2D;
-    private BoxCollider2D groundCollider2D;
 
     private PlayerControl.PlayerInfo playerInfo;
     private Image fuelGage;
@@ -30,7 +29,6 @@ public class GameRoot : MonoBehaviour
         ground = GameObject.FindGameObjectWithTag("Ground");
         fuelUI = GameObject.FindGameObjectWithTag("FuelUI");
 
-        groundCollider2D = ground.GetComponent<BoxCollider2D>();
         playerRb2D = player.GetComponent<Rigidbody2D>();
 
         playerControl = player.GetComponent<PlayerControl>();
@@ -118,11 +116,16 @@ public class GameRoot : MonoBehaviour
         // 땅에 떨어졌다면
         if (playerControl.IsLand())
         {
-            // 회전 속도를 줄인 후 강제로 똑바로 서게 끔 조정한다.
-            playerRb2D.angularVelocity *= 0.1f;
+            // 잠깐 물리 법칙을 제거하고 강제로 똑바로 서게 끔 조정한다.
+            playerRb2D.isKinematic = true;
+            player.transform.rotation = Quaternion.Euler(0f, 180f, 0);
 
+            // 똑바로 섰다면 다시 물리 법칙 적용
             if (player.transform.rotation.z == 0f)
+            {
                 playerRb2D.freezeRotation = true;
+                playerRb2D.isKinematic = false;
+            }
 
             // 우주선이 멈췄다면
             if (playerRb2D.velocity == Vector2.zero)

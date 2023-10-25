@@ -24,7 +24,7 @@ public class DestroyObject : MonoBehaviour
 
         xDestroyPos = cameraPos.x - (xScreenHalfSize * 2) - 1;
 
-        if (this.transform.position.x < xDestroyPos || this.transform.position.y < 0)
+        if (this.transform.position.x < xDestroyPos || this.transform.position.y < 2)
         {
             Destroy(this.gameObject);
         }
