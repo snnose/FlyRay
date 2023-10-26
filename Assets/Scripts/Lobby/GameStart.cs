@@ -16,4 +16,9 @@ public class GameStart : MonoBehaviour
     {
         
     }
+
+    public void OnClickStart()
+    {
+        SceneManager.LoadScene("Stage");
+    }
 }
