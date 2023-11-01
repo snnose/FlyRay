@@ -26,6 +26,8 @@ public class SpawnManager : MonoBehaviour
 
         yScreenHalfSize = Camera.main.orthographicSize;
         xScreenHalfSize = yScreenHalfSize * Camera.main.aspect;
+
+        SpawnInit();
     }
 
     private void Update()
@@ -35,6 +37,17 @@ public class SpawnManager : MonoBehaviour
             isExcute = true;
             InvokeRepeating("SpawnWaffle", spawnDelay, spawnInterval[0]);
             InvokeRepeating("SpawnMaro", spawnDelay, spawnInterval[1]);
+        }
+    }
+
+    void SpawnInit()
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            Vector3 spawnLocation =
+                new Vector3(Random.Range(1, 10), Random.Range(4, 12), 0);
+
+            Instantiate(objectPrefabs[0], spawnLocation, objectPrefabs[0].transform.rotation);
         }
     }
 

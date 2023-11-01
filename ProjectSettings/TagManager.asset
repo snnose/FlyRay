@@ -15,6 +15,9 @@ TagManager:
   - GameRoot
   - Maro
   - AudioManager
+  - UpgradeUI
+  - InfoDeliver
+  - GoldDeliver
   layers:
   - Default
   - TransparentFX

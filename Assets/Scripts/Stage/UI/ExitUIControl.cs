@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-public class RestartUIControl : MonoBehaviour
+public class ExitUIControl : MonoBehaviour
 {
     // Start is called before the first frame update
     void Start()
@@ -16,10 +16,5 @@ public class RestartUIControl : MonoBehaviour
     void Update()
     {
         
-    }
-
-    public void OnClickRestart()
-    {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }

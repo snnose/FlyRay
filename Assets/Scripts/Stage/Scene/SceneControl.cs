@@ -2,35 +2,24 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class SceneControl : MonoBehaviour
 {
-    public GameObject wafflePrefab;
+    private GameObject goldDeliver;
 
     // Start is called before the first frame update
     void Start()
     {
-        wafflePrefab = Resources.Load("Prefabs/Object/Waffle") as GameObject;
+        goldDeliver = GameObject.FindGameObjectWithTag("GoldDeliver");
 
         SetResolution();
-        init();
     }
 
     // Update is called once per frame
     void Update()
     {
         
-    }
-
-    void init()
-    {
-        for (int i = 0; i < 3; i++)
-        {
-            Vector3 spawnLocation =
-                new Vector3(Random.Range(1, 10), Random.Range(4, 12), 0);
-
-            Instantiate(wafflePrefab, spawnLocation, wafflePrefab.transform.rotation);
-        }
     }
 
     void SetResolution()
@@ -55,5 +44,15 @@ public class SceneControl : MonoBehaviour
             float newHeight = ((float)deviceWidth / deviceHeight) / ((float)setWidth / setHeight);
             Camera.main.rect = new Rect(0f, (1f - newHeight) / 2f, 1f, newHeight);
         }
+    }
+
+    public void OnClickExit()
+    {
+        SceneManager.LoadScene("Lobby");
+    }
+
+    public void OnClickRestart()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }
