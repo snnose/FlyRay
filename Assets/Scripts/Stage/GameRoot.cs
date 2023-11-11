@@ -5,18 +5,36 @@ using UnityEngine.UI;
 
 public class GameRoot : MonoBehaviour
 {
+    private static GameRoot instance = null;
+
+    public static GameRoot Instance
+    {
+        get
+        {
+            if (null == instance)
+                return null;
+
+            return instance;
+        }
+    }
+
+    private void Awake()
+    {
+        if (instance == null)
+            instance = this;
+        else
+            Destroy(this.gameObject);
+    }
+
     private GameObject player;
-    private GameObject ground;
     private GameObject fuelUI;
 
-    public PlayerControl playerControl;
     private FuelUIControl fuelUIControl;
 
     private Rigidbody2D playerRb2D;
 
-    private PlayerControl.PlayerInfo playerInfo;
+    private PlayerInfo playerInfo;
     private Image fuelGage;
-
 
     private float fuelAmount = 0f;
     private int throwTime = 0;
@@ -26,15 +44,13 @@ public class GameRoot : MonoBehaviour
     void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player");
-        ground = GameObject.FindGameObjectWithTag("Ground");
         fuelUI = GameObject.FindGameObjectWithTag("FuelUI");
 
         playerRb2D = player.GetComponent<Rigidbody2D>();
 
-        playerControl = player.GetComponent<PlayerControl>();
         fuelUIControl = fuelUI.GetComponent<FuelUIControl>();
 
-        playerInfo = playerControl.GetPlayerInfo();
+        playerInfo = PlayerControl.Instance.GetPlayerInfo();
         fuelGage = fuelUIControl.GetFuelGage();
 
         fuelAmount = playerInfo.GetFuelAmount();
@@ -43,94 +59,99 @@ public class GameRoot : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // 마우스 왼쪽 버튼 입력 시
-        if (playerControl.IsIdle())
+        // 퍼즈 상태가 아닐 때
+        if (!PauseControl.Instance.IsPause())
         {
-            playerRb2D.freezeRotation = true;
-            if (Input.GetMouseButtonDown(0))
-            {
-                Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero, 0f);
-
-                if (hit.collider != null && hit.collider.tag == "Player")
-                {
-                    playerControl.BeginGrab();
-                }
-            }
-        }
-
-        // 마우스 왼쪽 버튼 드래깅 시
-        if (playerControl.IsGrab())
-        {
-            Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-
-            playerRb2D.velocity = Vector2.zero;
-            playerRb2D.angularVelocity = 0f;
-            player.transform.position = mousePos;
-
-            posList.Add(mousePos);
-
-            // 마우스 왼쪽 버튼 땔 때
-            if (Input.GetMouseButtonUp(0))
-            {
-                // 플레이어가 날기 시작한다.
-                playerControl.BeginFly();
-                playerRb2D.freezeRotation = false;
-
-                throwTime = 0;
-                Vector2 minPos = findMinPos(posList);
-                Vector2 lastPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-               
-                // 던지는 방향 벡터 계산
-                Vector2 throwVector = lastPos - minPos;
-                // 던진 시간이 짧을 수록 던지는 힘이 강하도록
-                // 플레이어에 힘을 가한다
-                playerRb2D.AddForce(throwVector * ((throwTime + 50) / throwTime), ForceMode2D.Impulse);
-            }
-        }
-
-        // 비행 상태 중
-        if (playerControl.IsFly())
-        {
-            // 던지는 방향을 향하도록 플레이어를 회전시킨다.
-            float rotateZ = CalRotateZ(new Vector2(playerRb2D.velocity.x, playerRb2D.velocity.y));
-            player.transform.rotation = Quaternion.Euler(0f, 180f, -rotateZ);
-
-            if (Input.GetKey(KeyCode.Space) && fuelAmount > 0)
-            {
-                Vector2 F = Vector2.one;
-                F.y *= 2f;
-
-                // 힘을 가한다
-                playerRb2D.AddForce(F, ForceMode2D.Force);
-
-                fuelAmount -= Time.deltaTime * 100f;
-                ChangeFuelGageAmount(fuelAmount / 100);
-            }
-
-            // 땅에 떨어지면
-            if (playerControl.isOnGround)
-                playerControl.BeginLand();
-        }
-
-        // 땅에 떨어졌다면
-        if (playerControl.IsLand())
-        {
-            // 잠깐 물리 법칙을 제거하고 강제로 똑바로 서게 끔 조정한다.
-            playerRb2D.isKinematic = true;
-            player.transform.rotation = Quaternion.Euler(0f, 180f, 0);
-
-            // 똑바로 섰다면 다시 물리 법칙 적용
-            if (player.transform.rotation.z == 0f)
+            // 마우스 왼쪽 버튼 입력 시
+            if (PlayerControl.Instance.IsIdle())
             {
                 playerRb2D.freezeRotation = true;
-                playerRb2D.isKinematic = false;
+                if (Input.GetMouseButtonDown(0))
+                {
+                    Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                    RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero, 0f);
+
+                    if (hit.collider != null && hit.collider.tag == "Player")
+                    {
+                        PlayerControl.Instance.BeginGrab();
+                    }
+                }
             }
 
-            // 우주선이 멈췄다면
-            if (playerRb2D.velocity == Vector2.zero)
+            // 마우스 왼쪽 버튼 드래깅 시
+            if (PlayerControl.Instance.IsGrab())
             {
-                playerControl.BeginStop();
+                Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+
+                playerRb2D.velocity = Vector2.zero;
+                playerRb2D.angularVelocity = 0f;
+                player.transform.position = mousePos;
+
+                posList.Add(mousePos);
+
+                // 마우스 왼쪽 버튼 땔 때
+                if (Input.GetMouseButtonUp(0))
+                {
+                    // 플레이어가 날기 시작한다.
+                    PlayerControl.Instance.BeginFly();
+                    playerRb2D.freezeRotation = false;
+
+                    throwTime = 0;
+                    Vector2 minPos = findMinPos(posList);
+                    Vector2 lastPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+
+                    // 던지는 방향 벡터 계산
+                    Vector2 throwVector = lastPos - minPos;
+                    // 던진 시간이 짧을 수록 던지는 힘이 강하도록
+                    // 플레이어에 힘을 가한다
+                    playerRb2D.AddForce(throwVector * ((throwTime + 50) / throwTime), ForceMode2D.Impulse);
+                }
+            }
+
+            // 비행 상태 중
+            if (PlayerControl.Instance.IsFly())
+            {
+                // 던지는 방향을 향하도록 플레이어를 회전시킨다.
+                float rotateZ = CalRotateZ(new Vector2(playerRb2D.velocity.x, playerRb2D.velocity.y));
+                player.transform.rotation = Quaternion.Euler(0f, 180f, -rotateZ);
+
+                if (Input.GetKey(KeyCode.Space) &&
+                    fuelAmount > 0 && !PlayerControl.Instance.IsMaroPush())
+                {
+                    Vector2 F = Vector2.one;
+                    F.y *= 2f;
+
+                    // 힘을 가한다
+                    playerRb2D.AddForce(F, ForceMode2D.Force);
+
+                    fuelAmount -= Time.deltaTime * 100f;
+                    ChangeFuelGageAmount(fuelAmount / 100);
+                }
+
+                // 땅에 떨어지면
+                if (PlayerControl.Instance.isOnGround)
+                    PlayerControl.Instance.BeginLand();
+            }
+
+            // 땅에 떨어졌다면
+            if (PlayerControl.Instance.IsLand())
+            {
+                // 잠깐 물리 법칙을 제거하고 강제로 똑바로 서게 끔 조정한다.
+                playerRb2D.isKinematic = true;
+                player.transform.rotation = Quaternion.Euler(0f, 180f, 0);
+
+                // 똑바로 섰다면 다시 물리 법칙 적용
+                if (player.transform.rotation.z == 0f)
+                {
+                    playerRb2D.freezeRotation = true;
+                    playerRb2D.isKinematic = false;
+                }
+
+                // 우주선이 멈췄다면
+                if (playerRb2D.velocity == Vector2.zero)
+                {
+                    PlayerControl.Instance.BeginStop();
+                }
             }
         }
     }

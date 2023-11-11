@@ -16,6 +16,14 @@ public class AudioManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (PlayerControl.Instance.IsFly())
+        {
+            windSound.volume = 0.1f * DataManager.Instance.playerData.effectValue;
+        }
+
+        if (PlayerControl.Instance.IsMaroPush())
+        {
+            windSound.volume = 0.2f * DataManager.Instance.playerData.effectValue;
+        }
     }     
 }

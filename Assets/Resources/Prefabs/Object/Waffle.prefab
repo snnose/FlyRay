@@ -10,8 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 675772859768306689}
   - component: {fileID: 2687131891911717081}
-  - component: {fileID: 8463647122310473324}
   - component: {fileID: 82289646446628334}
+  - component: {fileID: 5326158584393991108}
   m_Layer: 0
   m_Name: Waffle
   m_TagString: Waffle
@@ -29,7 +29,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -14.41, y: 7.49, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -75,7 +75,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 99711037779d2364bafdce77cb321155, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 39b8e839067f3e8499e3bfcff6ba648e, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -86,8 +86,20 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!58 &8463647122310473324
-CircleCollider2D:
+--- !u!114 &82289646446628334
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 921499591224168623}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5101d791f63c9b4bba247044426a1b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!60 &5326158584393991108
+PolygonCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -118,18 +130,46 @@ CircleCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.015753865, y: -0.0090020895}
-  serializedVersion: 2
-  m_Radius: 0.540244
---- !u!114 &82289646446628334
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 921499591224168623}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5101d791f63c9b4bba247044426a1b1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 2.56, y: 2.56}
+    newSize: {x: 1.1, y: 1.13}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Points:
+    m_Paths:
+    - - {x: 1.09, y: -0.22999999}
+      - {x: 1.26, y: -0.08}
+      - {x: 1.28, y: -0.02}
+      - {x: 1.28, y: 0.26}
+      - {x: 1.27, y: 0.28}
+      - {x: 1.15, y: 0.39999998}
+      - {x: 0.83, y: 0.56}
+      - {x: 0.44, y: 0.74}
+      - {x: 0.13, y: 0.88}
+      - {x: 0.07, y: 0.9}
+      - {x: -0.089999996, y: 0.9}
+      - {x: -0.17999999, y: 0.88}
+      - {x: -0.44, y: 0.72999996}
+      - {x: -0.78999996, y: 0.53}
+      - {x: -1.06, y: 0.39}
+      - {x: -1.1999999, y: 0.28}
+      - {x: -1.27, y: 0.21}
+      - {x: -1.28, y: 0.17999999}
+      - {x: -1.28, y: -0.08}
+      - {x: -1.25, y: -0.14}
+      - {x: -1.1999999, y: -0.17999999}
+      - {x: -1.18, y: -0.21}
+      - {x: -0.61, y: -0.56}
+      - {x: -0.39999998, y: -0.69}
+      - {x: -0.26999998, y: -0.77}
+      - {x: -0.01, y: -0.9}
+      - {x: 0.19, y: -0.9}
+      - {x: 0.28, y: -0.85999995}
+      - {x: 0.64, y: -0.59999996}
+      - {x: 0.81, y: -0.45999998}
+  m_UseDelaunayMesh: 0

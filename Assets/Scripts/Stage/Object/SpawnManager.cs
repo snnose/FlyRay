@@ -22,7 +22,7 @@ public class SpawnManager : MonoBehaviour
     {
         player = GameObject.FindGameObjectWithTag("Player");
 
-        spawnInterval = new List<float>(new float[] { 0.1f , 0.5f});
+        spawnInterval = new List<float>(new float[] { 0.1f , 0.5f, 4.0f});
 
         yScreenHalfSize = Camera.main.orthographicSize;
         xScreenHalfSize = yScreenHalfSize * Camera.main.aspect;
@@ -37,6 +37,7 @@ public class SpawnManager : MonoBehaviour
             isExcute = true;
             InvokeRepeating("SpawnWaffle", spawnDelay, spawnInterval[0]);
             InvokeRepeating("SpawnMaro", spawnDelay, spawnInterval[1]);
+            InvokeRepeating("SpawnChicken", spawnDelay, spawnInterval[2]);
         }
     }
 
@@ -82,6 +83,22 @@ public class SpawnManager : MonoBehaviour
         {
             GameObject copy = Instantiate(objectPrefabs[1], spawnLocation,
                 objectPrefabs[1].transform.rotation);
+        }
+    }
+
+    void SpawnChicken()
+    {
+        float xSpawnPos = player.transform.position.x +
+                            xScreenHalfSize * 2 + Random.Range(1, 10);
+        float ySpawnPos = 2.49f;
+
+        Vector3 spawnLocation = new Vector3(xSpawnPos, ySpawnPos, 0);
+
+        if (player.GetComponent<PlayerControl>().IsFly() ||
+            player.GetComponent<PlayerControl>().IsLand())
+        {
+            GameObject copy = Instantiate(objectPrefabs[2], spawnLocation,
+                objectPrefabs[2].transform.rotation);
         }
     }
 }

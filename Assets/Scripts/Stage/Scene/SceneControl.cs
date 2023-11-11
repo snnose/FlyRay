@@ -6,13 +6,13 @@ using UnityEngine.SceneManagement;
 
 public class SceneControl : MonoBehaviour
 {
-    private GameObject goldDeliver;
+    private GameObject canvas;
+  
+    private UIControl UIControl;
 
     // Start is called before the first frame update
     void Start()
     {
-        goldDeliver = GameObject.FindGameObjectWithTag("GoldDeliver");
-
         SetResolution();
     }
 
@@ -46,13 +46,30 @@ public class SceneControl : MonoBehaviour
         }
     }
 
+    private void Awake()
+    {
+        canvas = GameObject.FindGameObjectWithTag("Canvas");
+
+        UIControl = canvas.GetComponent<UIControl>();
+    }
+
+    // °ñµå Á¤»ê
+    private void CalGold()
+    {
+        DataManager.Instance.GainGold(this.UIControl.GetGold());
+    }
+
     public void OnClickExit()
     {
+        CalGold();
+        DataManager.Instance.SaveData();
         SceneManager.LoadScene("Lobby");
     }
 
     public void OnClickRestart()
     {
+        CalGold();
+        DataManager.Instance.SaveData();
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }

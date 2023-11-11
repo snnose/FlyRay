@@ -2,44 +2,66 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerControl : MonoBehaviour
-{    
-    public class PlayerInfo
+public class PlayerInfo
+{
+    // 플레이어의 상태 표시
+    public enum state
     {
-        // 플레이어의 상태 표시
-        public enum state
+        IDLE = 0,       // 대기 중
+        GRABED,         // 마우스에 잡힘
+        FLIED,          // 비행 중
+        LANDED,         // 착륙 시
+        STOP,           // 완전 정지 시
+    };
+
+    // 연료양
+    private float fuelAmount = 100.0f;
+
+    // 얻은 와플 수
+    private int waffleCollected = 0;
+
+    public void GainWaffle()
+    {
+        this.waffleCollected++;
+    }
+
+    public float GetFuelAmount()
+    {
+        return this.fuelAmount;
+    }
+
+    public int GetWaffleCollected()
+    {
+        return this.waffleCollected;
+    }
+}
+
+public class PlayerControl : MonoBehaviour
+{
+    private static PlayerControl instance = null;
+    
+    public static PlayerControl Instance
+    {
+        get
         {
-            IDLE = 0,       // 대기 중
-            GRABED,         // 마우스에 잡힘
-            FLIED,          // 비행 중
-            LANDED,         // 착륙 시
-            STOP,           // 완전 정지 시
-        };
+            if (null == instance)
+                return null;
 
-        // 연료양
-        private float fuelAmount = 100.0f;
-
-        // 얻은 와플 수
-        private int waffleCollected = 0;
-
-        public void GainWaffle()
-        {
-            this.waffleCollected++;
-        }
-
-        public float GetFuelAmount()
-        {
-            return this.fuelAmount;
-        }
-
-        public int GetWaffleCollected()
-        {
-            return this.waffleCollected;
+            return instance;
         }
     }
-    private GameObject audioManager;
-    public GameObject player;
 
+    private void Awake()
+    {
+        if (instance == null)
+            instance = this;
+        else
+            Destroy(this.gameObject);
+    }
+
+    private GameObject audioManager;
+    private GameObject player;
+    
     private Rigidbody2D playerRb2D;
     private AudioSource windSound;
 
@@ -109,6 +131,16 @@ public class PlayerControl : MonoBehaviour
         return ret;
     }
 
+    public bool IsMaroPush()
+    {
+        bool ret = false;
+
+        if (this.maroTrigger)
+            ret = true;
+
+        return ret;
+    }
+
     public bool IsStop()
     {
         bool ret = false;
@@ -122,7 +154,6 @@ public class PlayerControl : MonoBehaviour
     public void BeginFly()
     {  
         this.currState = PlayerInfo.state.FLIED;
-        windSound.volume = 0.1f;
     }
 
     public void BeginGrab()
@@ -146,6 +177,11 @@ public class PlayerControl : MonoBehaviour
         return this.playerInfo;
     }
 
+    public GameObject GetPlayer()
+    {
+        return this.player;
+    }
+
     private void OnTriggerEnter2D(Collider2D collider)
     {
         if (this.currState == PlayerInfo.state.FLIED ||
@@ -159,9 +195,9 @@ public class PlayerControl : MonoBehaviour
             else if (collider.gameObject.CompareTag("Maro"))
             {
                 Destroy(collider.gameObject);
-                
+
                 if (!maroTrigger)
-                {   
+                {
                     maroPush = MaroPush();
                     StartCoroutine(maroPush);
                     maroTrigger = true;
@@ -172,12 +208,24 @@ public class PlayerControl : MonoBehaviour
                     maroPush = MaroPush();
                     StartCoroutine(maroPush);
                 }
-                //playerRb2D.AddForce(new Vector2(10, 10), ForceMode2D.Impulse); 
+            }
+            else if (collider.gameObject.CompareTag("Chicken"))
+            {
+                Destroy(collider.gameObject);
+
+                if (playerRb2D.velocity.y < 0)
+                    playerRb2D.velocity = new Vector2(playerRb2D.velocity.x, 0);
+                playerRb2D.AddForce(new Vector2(5, 20), ForceMode2D.Impulse);
+
+                // 착륙 중에 먹으면 다시 난다.
+                this.isOnGround = false;
+                playerRb2D.freezeRotation = false;
+                BeginFly();
             }
         }
     }
 
-    private void OnCollisionStay2D(Collision2D collision)
+    private void OnCollisionEnter2D(Collision2D collision)
     {
         if(this.currState == PlayerInfo.state.FLIED &&
             collision.collider.gameObject.CompareTag("Ground"))
@@ -186,11 +234,22 @@ public class PlayerControl : MonoBehaviour
         }
     }
 
+    /*
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        if (this.currState == PlayerInfo.state.LANDED &&
+            collision.collider.gameObject.CompareTag("Ground"))
+        {
+            this.isOnGround = false;
+            BeginFly();
+        }
+    }
+    */
+
     IEnumerator MaroPush()
     {
         yield return null;
 
-        windSound.volume = 0.2f;
         Vector2 currVelocity = playerRb2D.velocity;
         currVelocity.x += 5f;
         SetVG(new Vector2(currVelocity.x, 0), 0f);
@@ -209,26 +268,20 @@ public class PlayerControl : MonoBehaviour
 
         SetVG(currVelocity, 1f);
         playerRb2D.drag = 0.3f;
-        windSound.volume = 0.1f;
         playerRb2D.AddForce(new Vector2 (5f, 15f), ForceMode2D.Impulse);
         maroTrigger = false;
+
+        // 착륙 중에 닿았다면 다시 비행
+        if (IsLand())
+            currState = PlayerInfo.state.FLIED;
     }
 
     // 속도와 중력 설정
     void SetVG(Vector2 velocity, float gravity)
     {
+        if (velocity.y < 0)
+            velocity.y = 0;
         playerRb2D.velocity = velocity;
         playerRb2D.gravityScale = gravity;
     }
-
-    /*
-    private void OnCollisionExit2D(Collision2D collision)
-    {
-        if(this.currState == PlayerInfo.state.LANDED &&
-            collision.collider.gameObject.CompareTag("Ground"))
-        {
-            this.isOnGround = false;
-        }
-    }
-    */
 }

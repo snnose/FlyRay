@@ -16,8 +16,10 @@ TagManager:
   - Maro
   - AudioManager
   - UpgradeUI
-  - InfoDeliver
-  - GoldDeliver
+  - Chicken
+  - DataManager
+  - SettingUI
+  - PauseUI
   layers:
   - Default
   - TransparentFX
