@@ -28,7 +28,7 @@ public class UpgradeControl : MonoBehaviour
     {
         upgradeUI = GameObject.FindGameObjectWithTag("UpgradeUI");
 
-        upgradeUI.transform.position = new Vector3(960, 540, 0);
+        upgradeUI.transform.position = new Vector3(Screen.width * 0.5f, Screen.height * 0.5f, 0);
         upgradeUI.SetActive(false);
     }
 

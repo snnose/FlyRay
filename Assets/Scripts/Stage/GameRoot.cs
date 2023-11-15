@@ -24,16 +24,19 @@ public class GameRoot : MonoBehaviour
             instance = this;
         else
             Destroy(this.gameObject);
+
+        fuelUI = GameObject.FindGameObjectWithTag("FuelUI");
+
+        playerRb2D = player.GetComponent<Rigidbody2D>();
+        fuelUIControl = fuelUI.GetComponent<FuelUIControl>();
     }
 
-    private GameObject player;
+    public GameObject player;
     private GameObject fuelUI;
 
     private FuelUIControl fuelUIControl;
 
     private Rigidbody2D playerRb2D;
-
-    private PlayerInfo playerInfo;
     private Image fuelGage;
 
     private float fuelAmount = 0f;
@@ -43,17 +46,9 @@ public class GameRoot : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        player = GameObject.FindGameObjectWithTag("Player");
-        fuelUI = GameObject.FindGameObjectWithTag("FuelUI");
-
-        playerRb2D = player.GetComponent<Rigidbody2D>();
-
-        fuelUIControl = fuelUI.GetComponent<FuelUIControl>();
-
-        playerInfo = PlayerControl.Instance.GetPlayerInfo();
         fuelGage = fuelUIControl.GetFuelGage();
 
-        fuelAmount = playerInfo.GetFuelAmount();
+        fuelAmount = PlayerControl.Instance.GetPlayerInfo().GetFuelAmount();
     }
 
     // Update is called once per frame
@@ -92,8 +87,6 @@ public class GameRoot : MonoBehaviour
                 // 마우스 왼쪽 버튼 땔 때
                 if (Input.GetMouseButtonUp(0))
                 {
-                    // 플레이어가 날기 시작한다.
-                    PlayerControl.Instance.BeginFly();
                     playerRb2D.freezeRotation = false;
 
                     throwTime = 0;
@@ -106,6 +99,8 @@ public class GameRoot : MonoBehaviour
                     // 던진 시간이 짧을 수록 던지는 힘이 강하도록
                     // 플레이어에 힘을 가한다
                     playerRb2D.AddForce(throwVector * ((throwTime + throwPower) / throwTime), ForceMode2D.Impulse);
+                    // 플레이어가 날기 시작한다.
+                    PlayerControl.Instance.BeginFly();
                 }
             }
 
@@ -125,7 +120,7 @@ public class GameRoot : MonoBehaviour
                     F *= fuelPower;
 
                     // 힘을 가한다
-                    playerRb2D.AddForce(F, ForceMode2D.Force);
+                    playerRb2D.AddForce(F * 5f, ForceMode2D.Force);
 
                     fuelAmount -= Time.deltaTime * 100f;
                     ChangeFuelGageAmount(fuelAmount / 100);

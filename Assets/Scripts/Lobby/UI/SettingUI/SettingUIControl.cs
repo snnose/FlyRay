@@ -18,7 +18,7 @@ public class SettingUIControl : MonoBehaviour
     private void Awake()
     {
         this.settingUI = GameObject.FindGameObjectWithTag("SettingUI");
-        this.settingUI.transform.position = new Vector3(960, 540, 0);
+        this.settingUI.transform.position = new Vector3(Screen.width * 0.5f, Screen.height * 0.5f, 0);
         
         this.settingUI.SetActive(false);
     }

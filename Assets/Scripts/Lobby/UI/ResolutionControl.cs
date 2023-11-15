@@ -1,23 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.SceneManagement;
 
-public class SceneControl : MonoBehaviour
+public class ResolutionControl : MonoBehaviour
 {
-    private GameObject canvas;
-  
-    private UIControl UIControl;
+    public GameObject lobbyUI;
+    public GameObject upgradeUI;
+    public GameObject settingUI;
+    public GameObject noticeUI;
 
-    // Start is called before the first frame update
     void Start()
-    {
-        //SetResolution();
-    }
-
-    // Update is called once per frame
-    void Update()
     {
         //SetResolution();
     }
@@ -44,32 +36,5 @@ public class SceneControl : MonoBehaviour
             float newHeight = ((float)deviceWidth / deviceHeight) / ((float)setWidth / setHeight);
             Camera.main.rect = new Rect(0f, (1f - newHeight) / 2f, 1f, newHeight);
         }
-    }
-
-    private void Awake()
-    {
-        canvas = GameObject.FindGameObjectWithTag("Canvas");
-
-        UIControl = canvas.GetComponent<UIControl>();
-    }
-
-    // °ñµå Á¤»ê
-    private void CalGold()
-    {
-        DataManager.Instance.GainGold(this.UIControl.GetGold());
-    }
-
-    public void OnClickExit()
-    {
-        CalGold();
-        DataManager.Instance.SaveData();
-        SceneManager.LoadScene("Lobby");
-    }
-
-    public void OnClickRestart()
-    {
-        CalGold();
-        DataManager.Instance.SaveData();
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }

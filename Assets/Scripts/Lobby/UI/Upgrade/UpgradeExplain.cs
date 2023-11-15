@@ -28,8 +28,8 @@ public class UpgradeExplain : MonoBehaviour
     public GameObject purchase;
 
     private GameObject clickedUpgrade = null;
-
-    private float p;
+    
+    private float p;    // АЁАн
 
     private void Awake()
     {
@@ -94,12 +94,18 @@ public class UpgradeExplain : MonoBehaviour
             switch(upgradeName)
             {
                 case "ThrowUpgradeIcon":
-                    DataManager.Instance.playerData.throwUpgrade = 1;
-                    Purchase(clickedUpgrade);
+                    if (DataManager.Instance.playerData.currentGold >= p)
+                    {
+                        DataManager.Instance.playerData.throwUpgrade = 1;
+                        Purchase(clickedUpgrade);
+                    }
                     break;
                 case "FuelUpgradeIcon":
-                    DataManager.Instance.playerData.fuelUpgrade = 1;
-                    Purchase(clickedUpgrade);
+                    if (DataManager.Instance.playerData.currentGold >= p)
+                    {
+                        DataManager.Instance.playerData.fuelUpgrade = 1;
+                        Purchase(clickedUpgrade);
+                    }
                     break;
                 default:
                     break;
@@ -130,6 +136,7 @@ public class UpgradeExplain : MonoBehaviour
         DataManager.Instance.SpendGold(p);
         SetAlpha1(clickedUpgrade);
         purchase.SetActive(false);
+        
     }
 
     public GameObject GetClickedUpgrade()

@@ -101,6 +101,12 @@ public class PlayerControl : MonoBehaviour
             instance = this;
         else
             Destroy(this.gameObject);
+
+        player = GameObject.FindGameObjectWithTag("Player");
+
+        playerRb2D = player.GetComponent<Rigidbody2D>();
+
+        playerInfo = new PlayerInfo();
     }
 
     private GameObject player;
@@ -117,11 +123,7 @@ public class PlayerControl : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        player = GameObject.FindGameObjectWithTag("Player");
-
-        playerRb2D = player.GetComponent<Rigidbody2D>();
-
-        playerInfo = new PlayerInfo();
+        
     }
 
     // Update is called once per frame

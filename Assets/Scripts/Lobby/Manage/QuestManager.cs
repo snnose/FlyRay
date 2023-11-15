@@ -6,6 +6,7 @@ public class Quest
 {
     private string qTitle;
     private string qContent;
+    private string qDetail;
 
     public void SetTitle(string title)
     {
@@ -15,6 +16,11 @@ public class Quest
     public void SetContent(string content)
     {
         this.qContent = content;
+    }
+
+    public void SetDetail(string detail)
+    {
+        this.qDetail = detail;
     }
 
     public string GetTitle()
@@ -64,7 +70,7 @@ public class QuestManager : MonoBehaviour
 
         if (!DataManager.Instance.playerData.main1)
         {
-            quest.SetTitle("첫 비행");
+            quest.SetTitle("");
             quest.SetContent("고양이별로의 첫 걸음을 때세요." + "\n\n" + "(비행 횟수 0/1)");
 
             noticeUI.SetActive(true);
@@ -75,8 +81,6 @@ public class QuestManager : MonoBehaviour
             quest.SetTitle("");
             quest.SetContent("");
         }
-
-        //Debug.Log("퀘스트 UI 출력");
     }
 
     public void GoalExit()

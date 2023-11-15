@@ -12,7 +12,7 @@ public class NoticeUIControl : MonoBehaviour
 
     private void Start()
     {
-        noticeUI.transform.position = new Vector3(960, 540, 0);
+        noticeUI.transform.position = new Vector3(Screen.width * 0.5f, Screen.height * 0.5f, 0);
         noticeUI.SetActive(false);
     }
 
