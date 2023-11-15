@@ -34,8 +34,8 @@ public class UIControl : MonoBehaviour
             RenewUI();
         else
         {
-            DVAUIControl.velocityText.text = "Velocity :" + "\n" + "0 m/s";
-            DVAUIControl.altitudeText.text = "Altitude :" + "\n" + "0 m";
+            DVAUIControl.velocityText.text = "속도 :" + "\n" + "0 m/s";
+            DVAUIControl.altitudeText.text = "높이 :" + "\n" + "0 m";
         }
 
         if (playerControl.IsStop())
@@ -66,10 +66,10 @@ public class UIControl : MonoBehaviour
         gold = (waffleAmount * 5 + Mathf.Ceil(dis * 0.3f));
 
         resultUIControl.waffleCollected.text = 
-            "Gain waffles = " + waffleAmount + "              " + waffleAmount * 5 + " $";
-        resultUIControl.distance.text = 
-            "Distance = " + dis + " m" + "        " + Mathf.Ceil(dis * 0.3f * 10) / 10 + " $";
-        resultUIControl.totalScore.text = "Total = " + gold + " $";
+            "얻은 와플 : " + waffleAmount + "개" + "\n\n" + "=> " + waffleAmount * 5 + "  ";
+        resultUIControl.distance.text =
+            "거리 : " + dis + "m" + "\n\n" + "=> " + (Mathf.Ceil(dis * 0.3f)) + "  ";
+        resultUIControl.totalScore.text = "총 " + gold;
 
         resultUI.gameObject.SetActive(true);
     }
@@ -84,13 +84,13 @@ public class UIControl : MonoBehaviour
     {
         Rigidbody2D playerRb2D = player.GetComponent<Rigidbody2D>();
 
-        float currPosX = player.transform.position.x + 5f;
+        float currPosX = player.transform.position.x;
         float currPosY = player.transform.position.y - 2.76f;
         float velocity = playerRb2D.velocity.x;
 
-        DVAUIControl.distanceText.text = "Distance :" + "\n" + Mathf.Ceil(currPosX * 100) / 100 + " m";
-        DVAUIControl.velocityText.text = "Velocity :" + "\n" + Mathf.Ceil(velocity * 100) / 100 + " m/s";
-        DVAUIControl.altitudeText.text = "Altitude :" + "\n" + Mathf.Ceil(currPosY * 100) / 100 + " m";
+        DVAUIControl.distanceText.text = "거리 :" + "\n" + Mathf.Ceil(currPosX * 100) / 100 + " m";
+        DVAUIControl.velocityText.text = "속도 :" + "\n" + Mathf.Ceil(velocity * 100) / 100 + " m/s";
+        DVAUIControl.altitudeText.text = "높이 :" + "\n" + Mathf.Ceil(currPosY * 100) / 100 + " m";
     }
 
     public float GetGold()

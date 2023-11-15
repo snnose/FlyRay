@@ -102,9 +102,10 @@ public class GameRoot : MonoBehaviour
 
                     // 던지는 방향 벡터 계산
                     Vector2 throwVector = lastPos - minPos;
+                    float throwPower = PlayerControl.Instance.GetPlayerInfo().GetThrowPower();
                     // 던진 시간이 짧을 수록 던지는 힘이 강하도록
                     // 플레이어에 힘을 가한다
-                    playerRb2D.AddForce(throwVector * ((throwTime + 50) / throwTime), ForceMode2D.Impulse);
+                    playerRb2D.AddForce(throwVector * ((throwTime + throwPower) / throwTime), ForceMode2D.Impulse);
                 }
             }
 
@@ -119,7 +120,9 @@ public class GameRoot : MonoBehaviour
                     fuelAmount > 0 && !PlayerControl.Instance.IsMaroPush())
                 {
                     Vector2 F = Vector2.one;
+                    float fuelPower = PlayerControl.Instance.GetPlayerInfo().GetFuelPower();
                     F.y *= 2f;
+                    F *= fuelPower;
 
                     // 힘을 가한다
                     playerRb2D.AddForce(F, ForceMode2D.Force);
@@ -151,6 +154,14 @@ public class GameRoot : MonoBehaviour
                 if (playerRb2D.velocity == Vector2.zero)
                 {
                     PlayerControl.Instance.BeginStop();
+                    DataManager.Instance.playerData.count++;
+                    DataManager.Instance.playerData.totalDistance +=
+                        player.transform.position.x;
+
+                    if (player.transform.position.x > DataManager.Instance.playerData.maxDistance)
+                        DataManager.Instance.playerData.maxDistance = player.transform.position.x;
+                    if (player.transform.position.y > DataManager.Instance.playerData.maxAltitude)
+                        DataManager.Instance.playerData.maxAltitude = player.transform.position.y;
                 }
             }
         }

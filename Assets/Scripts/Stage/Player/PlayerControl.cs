@@ -4,6 +4,13 @@ using UnityEngine;
 
 public class PlayerInfo
 {
+    public PlayerInfo()
+    {
+        SetThrowPower(50f);
+        SetFuelPower(1f);
+        SetFuelAmount(100f);
+    }
+
     // 플레이어의 상태 표시
     public enum state
     {
@@ -14,8 +21,12 @@ public class PlayerInfo
         STOP,           // 완전 정지 시
     };
 
-    // 연료양
-    private float fuelAmount = 100.0f;
+    // 던지는 힘 보정치
+    private float throwPower = 0f;
+
+    // 연료
+    private float fuelAmount = 0f;      // 연료 양
+    private float fuelPower = 0f;           // 연료 효율(힘)
 
     // 얻은 와플 수
     private int waffleCollected = 0;
@@ -23,6 +34,39 @@ public class PlayerInfo
     public void GainWaffle()
     {
         this.waffleCollected++;
+    }
+
+    public void SetThrowPower(float throwPower)
+    {
+        if (DataManager.Instance.playerData.throwUpgrade == 1)
+            throwPower *= 1.5f;
+
+        this.throwPower = throwPower;
+    }
+
+    public void SetFuelPower(float fuelPower)
+    {
+        if (DataManager.Instance.playerData.fuelUpgrade == 1)
+            fuelPower *= 1.5f;
+
+        this.fuelPower = fuelPower;
+    }
+
+    public void SetFuelAmount(float fuelAmount)
+    {
+
+
+        this.fuelAmount = fuelAmount;
+    }
+
+    public float GetThrowPower()
+    {
+        return this.throwPower;
+    }
+
+    public float GetFuelPower()
+    {
+        return this.fuelPower;
     }
 
     public float GetFuelAmount()
@@ -59,11 +103,9 @@ public class PlayerControl : MonoBehaviour
             Destroy(this.gameObject);
     }
 
-    private GameObject audioManager;
     private GameObject player;
     
     private Rigidbody2D playerRb2D;
-    private AudioSource windSound;
 
     public PlayerInfo.state currState = PlayerInfo.state.IDLE;
     public bool isOnGround = false;
@@ -76,10 +118,8 @@ public class PlayerControl : MonoBehaviour
     void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player");
-        audioManager = GameObject.FindGameObjectWithTag("AudioManager");
 
         playerRb2D = player.GetComponent<Rigidbody2D>();
-        windSound = audioManager.GetComponent<AudioSource>();
 
         playerInfo = new PlayerInfo();
     }
@@ -169,7 +209,6 @@ public class PlayerControl : MonoBehaviour
     public void BeginStop()
     {
         this.currState = PlayerInfo.state.STOP;
-        windSound.Stop();
     }
 
     public PlayerInfo GetPlayerInfo()

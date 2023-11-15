@@ -32,13 +32,16 @@ public class SpawnManager : MonoBehaviour
 
     private void Update()
     {
+        
         if (!isExcute && player.GetComponent<PlayerControl>().IsFly())
         {
             isExcute = true;
             InvokeRepeating("SpawnWaffle", spawnDelay, spawnInterval[0]);
-            InvokeRepeating("SpawnMaro", spawnDelay, spawnInterval[1]);
-            InvokeRepeating("SpawnChicken", spawnDelay, spawnInterval[2]);
+            if (DataManager.Instance.playerData.main1)
+                InvokeRepeating("SpawnMaro", spawnDelay, spawnInterval[1]);
+            //InvokeRepeating("SpawnChicken", spawnDelay, spawnInterval[2]);
         }
+        
     }
 
     void SpawnInit()

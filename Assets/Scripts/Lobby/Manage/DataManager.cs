@@ -5,12 +5,21 @@ using System.IO;
 
 public class PlayerData
 {
-    // 진행 일 수 (플레이 횟수)
-    int day;
+    // 플레이 횟수
+    public int count;
+
+    // 비거리 및 높이 정보
+    public float totalDistance; // 총 진행 거리
+    public float maxDistance;   // 최고 비거리
+    public float maxAltitude;   // 최고 높이
+
+    // 메인 목표 진행 현황
+    public bool main1;          // 메인 1
+    public bool main2;
 
     // 골드 현황
-    public float currentGold;
-    public float totalGold;
+    public float currentGold;   // 현재 골드
+    public float totalGold;     // 총 골드
 
     // 업그레이드 현황 (0은 비활성, 1은 활성)
     public int throwUpgrade;    // 던지기 업그레이드
@@ -63,16 +72,7 @@ public class DataManager : MonoBehaviour
         // 세이브 파이리 없으면
         else
         {
-            // 데이터 초기화
-            // 재화
-            playerData.currentGold = 0f;
-            playerData.totalGold = 0f;
-            // 업그레이드
-            playerData.throwUpgrade = 0;
-            playerData.fuelUpgrade = 0;
-            // 환경설정
-            playerData.BGMValue = 1f;
-            playerData.effectValue = 1f;
+            InitData();
         }
     }
 
@@ -125,6 +125,28 @@ public class DataManager : MonoBehaviour
         }
 
         return ret;
+    }
+
+    // 데이터 초기화
+    public void InitData()
+    {
+        // 진행 일수
+        playerData.count = 0;
+        // 비거리 및 높이 정보
+        playerData.totalDistance = 0f;
+        playerData.maxDistance = 0f;
+        playerData.maxAltitude = 0f;
+        // 메인 목표 진행 현황
+        playerData.main1 = false;
+        // 재화
+        playerData.currentGold = 0f;
+        playerData.totalGold = 0f;
+        // 업그레이드
+        playerData.throwUpgrade = 0;
+        playerData.fuelUpgrade = 0;
+        // 환경설정
+        playerData.BGMValue = 1f;
+        playerData.effectValue = 1f;
     }
 
     // 업그레이드 초기화

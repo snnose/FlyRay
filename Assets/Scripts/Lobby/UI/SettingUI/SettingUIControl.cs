@@ -55,6 +55,17 @@ public class SettingUIControl : MonoBehaviour
         DataManager.Instance.SaveData();
     }
 
+    public void OnClickDataInit()
+    {
+        DataManager.Instance.InitData();
+        DataManager.Instance.SaveData();
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit(); 
+#endif
+    }
+
     public void OnValueChangedBGM()
     {
         

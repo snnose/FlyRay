@@ -25,5 +25,10 @@ public class AudioManager : MonoBehaviour
         {
             windSound.volume = 0.2f * DataManager.Instance.playerData.effectValue;
         }
+
+        if (PlayerControl.Instance.IsStop())
+        {
+            windSound.Stop();
+        }
     }     
 }

@@ -16,7 +16,7 @@ public class DVAUIControl : MonoBehaviour
     {
         this.transform.position = new Vector3(Screen.width * 0.30f, Screen.height * 0.90f);
 
-        distanceText.text = "Distance : " + "\n" + "0 m";
+        distanceText.text = "°Å¸® : " + "\n" + "0 m";
     }
 
     // Update is called once per frame
