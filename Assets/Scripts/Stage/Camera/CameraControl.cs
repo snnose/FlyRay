@@ -14,12 +14,11 @@ public class CameraControl : MonoBehaviour
         posDiff.z = 0;
     }
 
-    // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         Vector3 newPos =
             new Vector3(player.transform.position.x,
-                        player.transform.position.y,
+                        player.transform.position.y - 1,
                           this.transform.position.z);
 
         // 우주선이 날거나 착륙 중일 때(이동 중일 때)
@@ -29,17 +28,13 @@ public class CameraControl : MonoBehaviour
             case PlayerInfo.state.FLIED:
                 this.transform.position =
                     Vector3.Lerp(this.transform.position, newPos + posDiff, Time.deltaTime * 12.5f);
-                //Debug.Log("카메라 FLIED 진입");
+                //this.transform.position = newPos + posDiff;
                 break;
 
             case PlayerInfo.state.LANDED:
                 this.transform.position =
                     Vector3.Lerp(this.transform.position, newPos + posDiff, Time.deltaTime * 12.5f);
                 //Debug.Log("카메라 LANDED 진입");
-                break;
-            case PlayerInfo.state.STOP:
-                this.transform.position =
-                    Vector3.Lerp(this.transform.position, newPos + posDiff, Time.deltaTime * 12.5f);
                 break;
             default:
                 //Debug.Log("카메라 default 진입");

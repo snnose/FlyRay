@@ -5,7 +5,7 @@ using UnityEngine;
 public class MapCreator : MonoBehaviour
 {
     public GameObject player;
-    public GameObject mapPrefab;
+    private GameObject mapPrefab;
 
     Vector2 currMapPos;
 
@@ -13,8 +13,8 @@ public class MapCreator : MonoBehaviour
     void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player");
-
-        currMapPos = this.transform.position;
+        mapPrefab = Resources.Load("Prefabs/Map") as GameObject;
+        currMapPos = mapPrefab.transform.position;
     }
 
     // Update is called once per frame
@@ -22,7 +22,7 @@ public class MapCreator : MonoBehaviour
     {
         if (player.transform.position.x > currMapPos.x)
         {
-            currMapPos.x += this.GetComponent<BoxCollider2D>().size.x;
+            currMapPos.x += mapPrefab.GetComponent<BoxCollider2D>().size.x;
 
             GameObject go1 =
                 Instantiate(mapPrefab) as GameObject;

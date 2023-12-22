@@ -54,21 +54,37 @@ public class SceneControl : MonoBehaviour
     }
 
     // °ñµå Á¤»ê
-    private void CalGold()
+    private void CalWaffle()
     {
-        DataManager.Instance.GainGold(this.UIControl.GetGold());
+        DataManager.Instance.GainGold(this.UIControl.GetWaffle());
+    }
+
+    private void CalRecord()
+    {
+        DataManager.Instance.playerData.count++;
+        DataManager.Instance.playerData.totalDistance +=
+            PlayerControl.Instance.GetPlayer().transform.position.x;
+
+        if (PlayerControl.Instance.GetPlayer().transform.position.x * 5f > DataManager.Instance.playerData.maxDistance)
+            DataManager.Instance.playerData.maxDistance = 
+                Mathf.Round((PlayerControl.Instance.GetPlayer().transform.position.x * 100) / 20);
+        if (GameRoot.Instance.GetMaxAltitude() * 5f> DataManager.Instance.playerData.maxAltitude)
+            DataManager.Instance.playerData.maxAltitude = 
+                Mathf.Round((GameRoot.Instance.GetMaxAltitude() * 100) / 20);
     }
 
     public void OnClickExit()
     {
-        CalGold();
+        CalWaffle();
+        CalRecord();
         DataManager.Instance.SaveData();
         SceneManager.LoadScene("Lobby");
     }
 
     public void OnClickRestart()
     {
-        CalGold();
+        CalWaffle();
+        CalRecord();
         DataManager.Instance.SaveData();
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }

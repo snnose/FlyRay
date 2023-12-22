@@ -25,6 +25,9 @@ public class GameRoot : MonoBehaviour
         else
             Destroy(this.gameObject);
 
+        Time.timeScale = 1f;
+
+        chichute = GameObject.FindGameObjectWithTag("Chichute");
         fuelUI = GameObject.FindGameObjectWithTag("FuelUI");
 
         playerRb2D = player.GetComponent<Rigidbody2D>();
@@ -32,6 +35,7 @@ public class GameRoot : MonoBehaviour
     }
 
     public GameObject player;
+    private GameObject chichute;
     private GameObject fuelUI;
 
     private FuelUIControl fuelUIControl;
@@ -43,12 +47,22 @@ public class GameRoot : MonoBehaviour
     private int throwTime = 0;
     private List<Vector2> posList = new List<Vector2>();
 
+    private float maxAltitude = 2.8f;
+
+    private bool isGameEnded = false;   // 퍼즈 후 끝낼 때 true
+    int boosterCount; int chichuteCount;
+
+    private IEnumerator releaseChichute = null;
+
     // Start is called before the first frame update
     void Start()
     {
+        chichute.SetActive(false);
         fuelGage = fuelUIControl.GetFuelGage();
 
         fuelAmount = PlayerControl.Instance.GetPlayerInfo().GetFuelAmount();
+        boosterCount = PlayerControl.Instance.GetPlayerInfo().GetBoosterCount();
+        chichuteCount = PlayerControl.Instance.GetPlayerInfo().GetChichuteCount();
     }
 
     // Update is called once per frame
@@ -69,6 +83,7 @@ public class GameRoot : MonoBehaviour
                     if (hit.collider != null && hit.collider.tag == "Player")
                     {
                         PlayerControl.Instance.BeginGrab();
+                        AudioManager.Instance.grabSound.Play();
                     }
                 }
             }
@@ -111,8 +126,27 @@ public class GameRoot : MonoBehaviour
                 float rotateZ = CalRotateZ(new Vector2(playerRb2D.velocity.x, playerRb2D.velocity.y));
                 player.transform.rotation = Quaternion.Euler(0f, 180f, -rotateZ);
 
+                if (player.transform.position.y > maxAltitude)
+                    maxAltitude = player.transform.position.y;
+
+                // 연료 사용 시 엔진 소리 출력
+                if (Input.GetKeyDown(KeyCode.Space) && fuelAmount > 0 &&
+                    !PlayerControl.Instance.IsMaroPush() &&
+                    releaseChichute == null)
+                {
+                    AudioManager.Instance.spaceEngineSound.Play();
+                }
+
+                // 연료를 다 사용하면 소리 중지
+                if (fuelAmount <= 0)
+                {
+                    AudioManager.Instance.spaceEngineSound.Stop();
+                }
+
+                // 스페이스를 누르면 연료 사용
                 if (Input.GetKey(KeyCode.Space) &&
-                    fuelAmount > 0 && !PlayerControl.Instance.IsMaroPush())
+                    fuelAmount > 0 && !PlayerControl.Instance.IsMaroPush() &&
+                    releaseChichute == null)
                 {
                     Vector2 F = Vector2.one;
                     float fuelPower = PlayerControl.Instance.GetPlayerInfo().GetFuelPower();
@@ -120,10 +154,36 @@ public class GameRoot : MonoBehaviour
                     F *= fuelPower;
 
                     // 힘을 가한다
-                    playerRb2D.AddForce(F * 5f, ForceMode2D.Force);
+                    playerRb2D.AddForce(F * 10f, ForceMode2D.Force);
 
                     fuelAmount -= Time.deltaTime * 100f;
                     ChangeFuelGageAmount(fuelAmount / 100);
+                }
+
+                // 연료 사용을 멈추면 소리 off
+                if (Input.GetKeyUp(KeyCode.Space))
+                    AudioManager.Instance.spaceEngineSound.Stop();
+
+                if (Input.GetKey(KeyCode.LeftControl) &&
+                    boosterCount > 0)
+                {
+                    playerRb2D.AddForce(new Vector2(20f, 30f), ForceMode2D.Impulse);
+                    boosterCount--;
+                }
+                // 하강 중에 X키를 누르면 닭하산을 펼친다.
+                if (Input.GetKeyDown(KeyCode.X) &&
+                    playerRb2D.velocity.y < 0 &&
+                    chichuteCount > 0)
+                {
+                    releaseChichute = ReleaseChichute();
+                    StartCoroutine(releaseChichute);
+                }
+
+                // 고도 5,000m 이상일 때 게임 클리어
+                if (player.transform.position.y >= 1000)
+                {
+                    PlayerControl.Instance.BeginStop();
+                    SetGameEnded(true);
                 }
 
                 // 땅에 떨어지면
@@ -149,14 +209,7 @@ public class GameRoot : MonoBehaviour
                 if (playerRb2D.velocity == Vector2.zero)
                 {
                     PlayerControl.Instance.BeginStop();
-                    DataManager.Instance.playerData.count++;
-                    DataManager.Instance.playerData.totalDistance +=
-                        player.transform.position.x;
-
-                    if (player.transform.position.x > DataManager.Instance.playerData.maxDistance)
-                        DataManager.Instance.playerData.maxDistance = player.transform.position.x;
-                    if (player.transform.position.y > DataManager.Instance.playerData.maxAltitude)
-                        DataManager.Instance.playerData.maxAltitude = player.transform.position.y;
+                    SetGameEnded(true);
                 }
             }
         }
@@ -182,6 +235,33 @@ public class GameRoot : MonoBehaviour
         return mPos;
     }
 
+    private IEnumerator ReleaseChichute()
+    {
+        chichuteCount--;
+        chichute.SetActive(true);
+        float velocity_y = 0f;
+
+        AudioManager.Instance.chicuteSound.Play();
+
+        for (int i = 0; i < 500; i++)
+        {
+            velocity_y = playerRb2D.velocity.y * 0.98f;
+            playerRb2D.AddForce(new Vector2(4.0f, 0f));
+            playerRb2D.velocity = new Vector2 (playerRb2D.velocity.x, velocity_y);
+            yield return null;
+        }
+
+        yield return null;
+        chichute.SetActive(false);
+        yield return null;
+        releaseChichute = null;
+    }
+
+    public IEnumerator GetChichuteCoroutine()
+    {
+        return this.releaseChichute;
+    }
+
     private float CalRotateZ(Vector2 v)
     {
         float f = 0f;
@@ -192,22 +272,31 @@ public class GameRoot : MonoBehaviour
         return f;
     }
 
-    private Vector2 CalDir()
-    {
-        Vector2 dir = Vector2.one;
-        float dirX = dir.x * Mathf.Cos(-player.transform.rotation.z);
-        float dirY = dir.y * Mathf.Sin(-player.transform.rotation.z);
-
-        dir = new Vector2(dirX, dirY);
-
-        return dir;
-    }
-
     void ChangeFuelGageAmount(float amount)
     {
         fuelGage.fillAmount = amount;
 
         if (fuelGage.fillAmount <= 0f)
             fuelGage.fillAmount = 0f;
+    }
+    
+    public void SetGameEnded(bool end)
+    {
+        this.isGameEnded = end;
+    }
+
+    public bool IsGameEnded()
+    {
+        return this.isGameEnded;
+    }
+
+    public float GetMaxAltitude()
+    {
+        return this.maxAltitude;
+    }
+
+    public GameObject GetChichute()
+    {
+        return this.chichute;
     }
 }

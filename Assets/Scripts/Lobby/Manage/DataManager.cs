@@ -16,16 +16,25 @@ public class PlayerData
     // 메인 목표 진행 현황
     public bool main1;          // 메인 1
     public bool main2;
+    public bool main3;
+    public bool main4;
+    public bool main5;
 
-    // 골드 현황
-    public float currentGold;   // 현재 골드
-    public float totalGold;     // 총 골드
+    // 와플 현황
+    public float currentWaffle;   // 현재 와플 개수
+    public float totalWaffle;     // 총 와플 개수
 
     // 업그레이드 현황 (0은 비활성, 1은 활성)
     public int throwUpgrade;    // 던지기 업그레이드
+    public int airdragUpgrade;  // 공기 저항 감소 업글
+    public int weightUpgrade;   // 무게 감소 업그레이드
     public int fuelUpgrade;     // 연료 업그레이드
 
-    public int chichute;         // 닭 낙하산
+    public int MaroUpgrade;     // 마로 업그레이드
+    public int trumpetUpgrade;  // 나팔 업그레이드
+
+    public int chichuteUpgrade; // 닭 낙하산
+    public int boosterUpgrade;  // 부스터
 
     // 환경 설정 값
     public float BGMValue;
@@ -69,7 +78,7 @@ public class DataManager : MonoBehaviour
             // 디버그
             
         }
-        // 세이브 파이리 없으면
+        // 세이브 파일이 없으면
         else
         {
             InitData();
@@ -101,16 +110,16 @@ public class DataManager : MonoBehaviour
 
     public void GainGold(float gold)
     {
-        playerData.currentGold = Mathf.Ceil(playerData.currentGold);
-        playerData.totalGold = Mathf.Ceil(playerData.totalGold);
+        playerData.currentWaffle = Mathf.Ceil(playerData.currentWaffle);
+        playerData.totalWaffle = Mathf.Ceil(playerData.totalWaffle);
 
-        playerData.currentGold += gold;
-        playerData.totalGold += gold;
+        playerData.currentWaffle += gold;
+        playerData.totalWaffle += gold;
     }
 
     public void SpendGold(float gold)
     {
-        playerData.currentGold -= gold;
+        playerData.currentWaffle -= gold;
         this.goldChanged = true;
     }
 
@@ -138,12 +147,15 @@ public class DataManager : MonoBehaviour
         playerData.maxAltitude = 0f;
         // 메인 목표 진행 현황
         playerData.main1 = false;
+        playerData.main2 = false;
+        playerData.main3 = false;
+        playerData.main4 = false;
+        playerData.main5 = false;
         // 재화
-        playerData.currentGold = 0f;
-        playerData.totalGold = 0f;
+        playerData.currentWaffle = 0f;
+        playerData.totalWaffle = 0f;
         // 업그레이드
-        playerData.throwUpgrade = 0;
-        playerData.fuelUpgrade = 0;
+        InitUpgrade();
         // 환경설정
         playerData.BGMValue = 1f;
         playerData.effectValue = 1f;
@@ -153,11 +165,20 @@ public class DataManager : MonoBehaviour
     public void InitUpgrade()
     {
         playerData.throwUpgrade = 0;
+        playerData.airdragUpgrade = 0;
+        playerData.weightUpgrade = 0;
         playerData.fuelUpgrade = 0;
 
-        playerData.currentGold = playerData.totalGold;
-        this.goldChanged = true;
+        playerData.MaroUpgrade = 0;
+        playerData.trumpetUpgrade = 0;
 
-        SaveData();
+        playerData.chichuteUpgrade = 0;
+        playerData.boosterUpgrade = 0;
+    }
+
+    public void InitGold()
+    {
+        playerData.currentWaffle = playerData.totalWaffle;
+        this.goldChanged = true;
     }
 }

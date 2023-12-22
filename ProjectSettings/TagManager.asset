@@ -21,6 +21,8 @@ TagManager:
   - SettingUI
   - PauseUI
   - NoticeUI
+  - Chichute
+  - Trumpet
   layers:
   - Default
   - TransparentFX

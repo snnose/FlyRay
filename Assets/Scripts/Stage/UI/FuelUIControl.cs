@@ -15,7 +15,7 @@ public class FuelUIControl : MonoBehaviour
         this.transform.position = new Vector3(Screen.width * 0.125f, Screen.height * 0.05f);
         fuelName.transform.position += new Vector3(0f, 40f);
 
-        fuelName.text = "Fuel";
+        fuelName.text = "¿¬·á";
     }
 
     // Update is called once per frame

@@ -22,8 +22,7 @@ public class UpgradeControl : MonoBehaviour
     private GameObject upgradeUI;
     public GameObject purchase;
 
-    public GameObject throwUpgradeIcon;
-    public GameObject fuelUpgradeIcon;
+    public List<GameObject> Icons = new List<GameObject>();
     private void Awake()
     {
         upgradeUI = GameObject.FindGameObjectWithTag("UpgradeUI");
@@ -46,9 +45,11 @@ public class UpgradeControl : MonoBehaviour
     {
         // 업그레이드 내역을 초기화하고 골드를 돌려 받는다.
         DataManager.Instance.InitUpgrade();
+        DataManager.Instance.InitGold();
         // 아이콘 투명도 0.5로 설정
-        SetAlphaHalf(throwUpgradeIcon);
-        SetAlphaHalf(fuelUpgradeIcon);
+        int count = Icons.Count;
+        for (int i = 0; i < count; i++)
+            SetAlphaHalf(Icons[i]);
         // 구매 버튼이 비활성화 상태이면 활성화
         if (!purchase.activeSelf)
             purchase.SetActive(true);

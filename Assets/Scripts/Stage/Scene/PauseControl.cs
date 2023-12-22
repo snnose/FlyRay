@@ -61,4 +61,9 @@ public class PauseControl : MonoBehaviour
     {
         return this.isPause;
     }
+
+    public void SetPause(bool pause)
+    {
+        isPause = pause;
+    }
 }

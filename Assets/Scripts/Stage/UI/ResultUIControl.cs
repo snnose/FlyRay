@@ -8,7 +8,11 @@ public class ResultUIControl : MonoBehaviour
 {
     public TextMeshProUGUI waffleCollected;
     public TextMeshProUGUI distance;
+    public TextMeshProUGUI altitude;
+    public TextMeshProUGUI calculate;
     public TextMeshProUGUI totalScore;
+
+    private float maxAltitude = 0f;
 
     // Start is called before the first frame update
     void Start()
@@ -19,6 +23,6 @@ public class ResultUIControl : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+     
     }
 }

@@ -11,7 +11,7 @@ public class GoldUIControl : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        goldAmount.SetText(DataManager.Instance.playerData.currentGold.ToString());
+        goldAmount.SetText(DataManager.Instance.playerData.currentWaffle.ToString());
         goldAmount.alignment = TMPro.TextAlignmentOptions.Center;
     }
 
@@ -19,6 +19,6 @@ public class GoldUIControl : MonoBehaviour
     void Update()
     {
         if (DataManager.Instance.IsGoldChanged())
-            goldAmount.SetText(DataManager.Instance.playerData.currentGold.ToString());
+            goldAmount.SetText(DataManager.Instance.playerData.currentWaffle.ToString());
     }
 }

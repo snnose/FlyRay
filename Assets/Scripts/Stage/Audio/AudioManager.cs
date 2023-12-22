@@ -4,13 +4,33 @@ using UnityEngine;
 
 public class AudioManager : MonoBehaviour
 {
-    private AudioSource windSound;
-
-    // Start is called before the first frame update
-    void Start()
+    private static AudioManager instance;
+    public static AudioManager Instance
     {
-        windSound = this.GetComponent<AudioSource>();
-        windSound.volume = 0f;
+        get
+        {
+            if (null == instance)
+                return null;
+
+            return instance;
+        }
+    }
+    public AudioSource windSound;
+    public AudioSource grabSound;
+    public AudioSource waffleSound;
+    public AudioSource trumpetSound;
+    public AudioSource chicuteSound;
+    public AudioSource spaceEngineSound;
+    public AudioSource gameFinishSound;
+
+    void Awake()
+    {
+        if (instance == null)
+            instance = this;
+        else
+            Destroy(this.gameObject);
+
+        InitSound();
     }
 
     // Update is called once per frame
@@ -18,17 +38,29 @@ public class AudioManager : MonoBehaviour
     {
         if (PlayerControl.Instance.IsFly())
         {
-            windSound.volume = 0.1f * DataManager.Instance.playerData.effectValue;
+            windSound.volume = DataManager.Instance.playerData.effectValue;
         }
 
         if (PlayerControl.Instance.IsMaroPush())
         {
-            windSound.volume = 0.2f * DataManager.Instance.playerData.effectValue;
+            windSound.volume = DataManager.Instance.playerData.effectValue * 1.5f;
         }
 
-        if (PlayerControl.Instance.IsStop())
+        if (GameRoot.Instance.IsGameEnded())
         {
             windSound.Stop();
         }
-    }     
+    }
+
+    // 소리 초기화
+    private void InitSound()
+    {
+        windSound.volume = 0f;
+        grabSound.volume = DataManager.Instance.playerData.effectValue;
+        waffleSound.volume = DataManager.Instance.playerData.effectValue;
+        trumpetSound.volume = DataManager.Instance.playerData.effectValue;
+        chicuteSound.volume = DataManager.Instance.playerData.effectValue;
+        spaceEngineSound.volume = DataManager.Instance.playerData.effectValue * 2;
+        gameFinishSound.volume = DataManager.Instance.playerData.effectValue;
+    }
 }

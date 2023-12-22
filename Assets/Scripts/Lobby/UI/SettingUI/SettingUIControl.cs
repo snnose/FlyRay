@@ -9,6 +9,7 @@ using System;
 public class SettingUIControl : MonoBehaviour
 {
     private GameObject settingUI;
+  
     public GameObject BGMScrollBar;
     public GameObject effectScrollBar;
 
