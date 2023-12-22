@@ -363,11 +363,11 @@ public class PlayerControl : MonoBehaviour
         
         //yield return new WaitForSeconds(2f);
         
-        for (int i = 0; i < 500; i++)
+        for (int i = 0; i < 300; i++)
         {
             Vector2 player_pos = player.transform.position;
             maro.transform.position = player_pos + new Vector2(-1.1f, -0.6f);
-            yield return null;
+            yield return new WaitForSeconds(0.001f);
         }
         
         SetVG(currVelocity, 1f);

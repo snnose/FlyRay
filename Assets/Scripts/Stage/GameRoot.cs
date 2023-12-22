@@ -243,12 +243,12 @@ public class GameRoot : MonoBehaviour
 
         AudioManager.Instance.chicuteSound.Play();
 
-        for (int i = 0; i < 500; i++)
+        for (int i = 0; i < 300; i++)
         {
             velocity_y = playerRb2D.velocity.y * 0.98f;
             playerRb2D.AddForce(new Vector2(4.0f, 0f));
             playerRb2D.velocity = new Vector2 (playerRb2D.velocity.x, velocity_y);
-            yield return null;
+            yield return new WaitForSeconds(0.001f);
         }
 
         yield return null;
