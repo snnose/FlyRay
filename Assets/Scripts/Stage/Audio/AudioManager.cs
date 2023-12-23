@@ -22,6 +22,7 @@ public class AudioManager : MonoBehaviour
     public AudioSource chicuteSound;
     public AudioSource spaceEngineSound;
     public AudioSource gameFinishSound;
+    public AudioSource maroSound;
 
     void Awake()
     {
@@ -59,8 +60,9 @@ public class AudioManager : MonoBehaviour
         grabSound.volume = DataManager.Instance.playerData.effectValue;
         waffleSound.volume = DataManager.Instance.playerData.effectValue;
         trumpetSound.volume = DataManager.Instance.playerData.effectValue;
-        chicuteSound.volume = DataManager.Instance.playerData.effectValue;
+        chicuteSound.volume = DataManager.Instance.playerData.effectValue * 1.5f;
         spaceEngineSound.volume = DataManager.Instance.playerData.effectValue * 2;
         gameFinishSound.volume = DataManager.Instance.playerData.effectValue;
+        maroSound.volume = DataManager.Instance.playerData.effectValue * 1.5f;
     }
 }

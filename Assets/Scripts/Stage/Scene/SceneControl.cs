@@ -68,7 +68,7 @@ public class SceneControl : MonoBehaviour
         if (PlayerControl.Instance.GetPlayer().transform.position.x * 5f > DataManager.Instance.playerData.maxDistance)
             DataManager.Instance.playerData.maxDistance = 
                 Mathf.Round((PlayerControl.Instance.GetPlayer().transform.position.x * 100) / 20);
-        if (GameRoot.Instance.GetMaxAltitude() * 5f> DataManager.Instance.playerData.maxAltitude)
+        if (GameRoot.Instance.GetMaxAltitude() * 5f > DataManager.Instance.playerData.maxAltitude)
             DataManager.Instance.playerData.maxAltitude = 
                 Mathf.Round((GameRoot.Instance.GetMaxAltitude() * 100) / 20);
     }

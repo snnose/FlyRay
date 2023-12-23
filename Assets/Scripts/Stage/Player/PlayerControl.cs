@@ -146,6 +146,7 @@ public class PlayerControl : MonoBehaviour
     private GameObject player;
     
     private Rigidbody2D playerRb2D;
+    private float playerAirDrag = 0.3f;
 
     public PlayerInfo.state currState = PlayerInfo.state.IDLE;
     public bool isOnGround = false;
@@ -171,8 +172,8 @@ public class PlayerControl : MonoBehaviour
         if (DataManager.Instance.playerData.weightUpgrade == 1)
             playerRb2D.mass *= 0.5f;
 
-        if (DataManager.Instance.playerData.airdragUpgrade == 1)
-            playerRb2D.drag *= 0.7f;
+        playerAirDrag -= (0.09f * DataManager.Instance.playerData.airdragUpgrade);
+        playerRb2D.drag = playerAirDrag;
     }
 
     public bool IsIdle()
@@ -355,9 +356,11 @@ public class PlayerControl : MonoBehaviour
     {
         yield return null;
         maro.GetComponent<MaroControl>().StartPush();
+        AudioManager.Instance.maroSound.Play();
+        maro.transform.rotation = Quaternion.Euler(0f, 0f, -15f);
 
         Vector2 currVelocity = playerRb2D.velocity;
-        currVelocity.x += 5f;
+        currVelocity.x += 10f;
         SetVG(new Vector2(currVelocity.x, 0), 0f);
         playerRb2D.drag = 0f;
         
@@ -366,12 +369,12 @@ public class PlayerControl : MonoBehaviour
         for (int i = 0; i < 300; i++)
         {
             Vector2 player_pos = player.transform.position;
-            maro.transform.position = player_pos + new Vector2(-1.1f, -0.6f);
+            maro.transform.position = player_pos + new Vector2(-1.15f, -0.6f);
             yield return new WaitForSeconds(0.001f);
         }
         
         SetVG(currVelocity, 1f);
-        playerRb2D.drag = 0.3f;
+        playerRb2D.drag = playerAirDrag;
 
         Vector2 Force = new Vector2(20f, 20f) * maroThrowForce + new Vector2(20f, 20f) * trumpetCount;
         playerRb2D.AddForce(Force, ForceMode2D.Impulse);

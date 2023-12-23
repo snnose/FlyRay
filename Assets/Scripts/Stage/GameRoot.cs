@@ -154,7 +154,7 @@ public class GameRoot : MonoBehaviour
                     F *= fuelPower;
 
                     // 힘을 가한다
-                    playerRb2D.AddForce(F * 10f, ForceMode2D.Force);
+                    playerRb2D.AddForce(F * 15f, ForceMode2D.Force);
 
                     fuelAmount -= Time.deltaTime * 100f;
                     ChangeFuelGageAmount(fuelAmount / 100);
