@@ -39,12 +39,12 @@ public class AudioManager : MonoBehaviour
     {
         if (PlayerControl.Instance.IsFly())
         {
-            windSound.volume = DataManager.Instance.playerData.effectValue;
+            windSound.volume = DataManager.Instance.playerData.effectValue * 0.3f;
         }
 
         if (PlayerControl.Instance.IsMaroPush())
         {
-            windSound.volume = DataManager.Instance.playerData.effectValue * 1.5f;
+            windSound.volume = DataManager.Instance.playerData.effectValue * 0.45f;
         }
 
         if (GameRoot.Instance.IsGameEnded())

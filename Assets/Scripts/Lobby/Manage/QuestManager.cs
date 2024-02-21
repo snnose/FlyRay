@@ -84,7 +84,7 @@ public class QuestManager : MonoBehaviour
             noticeUI.SetActive(true);
 
             string title = "목표 달성!";
-            string content = "보상 - 와플 300개, 비행 중에 나팔이 생성됩니다";
+            string content = "보상 - 와플 300개";
             noticeUIControl.SetNoticeText(title, content);
 
             DataManager.Instance.playerData.currentWaffle += 300;
@@ -92,16 +92,16 @@ public class QuestManager : MonoBehaviour
 
             DataManager.Instance.SaveData();
         }
-        // 2500m 이상 비행 시 클리어
+        // 4000m 이상 비행 시 클리어
         if (DataManager.Instance.playerData.main2 &&
            !DataManager.Instance.playerData.main3 &&
-            DataManager.Instance.playerData.maxDistance >= 2500f)
+            DataManager.Instance.playerData.maxDistance >= 7500f)
         {
             DataManager.Instance.playerData.main3 = true;
             noticeUI.SetActive(true);
 
             string title = "목표 달성!";
-            string content = "보상 - 와플 500개";
+            string content = "보상 - 와플 500개, 비행 중에 나팔이 생성됩니다";
             noticeUIControl.SetNoticeText(title, content);
 
             DataManager.Instance.playerData.currentWaffle += 500;
@@ -160,8 +160,8 @@ public class QuestManager : MonoBehaviour
            !DataManager.Instance.playerData.main3)
         {
             quest.SetTitle("멀리멀리!");
-            quest.SetContent("한 번에 2,500미터 이상 비행하세요. \n\n (최고 거리 " +
-                DataManager.Instance.playerData.maxDistance + "/2500)");
+            quest.SetContent("한 번에 7,500미터 이상 비행하세요. \n\n (최고 거리 " +
+                DataManager.Instance.playerData.maxDistance + "/7500)");
 
             noticeUI.SetActive(true);
             noticeUIControl.SetNoticeText(quest.GetTitle(), quest.GetContent());
@@ -171,7 +171,7 @@ public class QuestManager : MonoBehaviour
            !DataManager.Instance.playerData.main4)
         {
             quest.SetTitle("고양이별로!");
-            quest.SetContent("고도 5000미터를 도달하세요. \n\n (최고 고도 " +
+            quest.SetContent("고도 5,000미터를 도달하세요. \n\n (최고 고도 " +
                 DataManager.Instance.playerData.maxAltitude + "/5000)");
 
             noticeUI.SetActive(true);

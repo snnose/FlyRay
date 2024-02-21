@@ -71,26 +71,30 @@ public class GameRoot : MonoBehaviour
         // 퍼즈 상태가 아닐 때
         if (!PauseControl.Instance.IsPause())
         {
-            // 마우스 왼쪽 버튼 입력 시
+            // 플레이어가 대기 상태일 때
             if (PlayerControl.Instance.IsIdle())
             {
                 playerRb2D.freezeRotation = true;
+                // 마우스 좌클릭 입력 시
                 if (Input.GetMouseButtonDown(0))
                 {
                     Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                     RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero, 0f);
 
+                    // 좌클릭 대상이 플레이어라면
                     if (hit.collider != null && hit.collider.tag == "Player")
                     {
+                        // 플레이어가 잡힘 상태로 변경된다.
                         PlayerControl.Instance.BeginGrab();
                         AudioManager.Instance.grabSound.Play();
                     }
                 }
             }
 
-            // 마우스 왼쪽 버튼 드래깅 시
+            // 플레이어가 잡힘 상태일 때 (좌클릭 유지 중일 때)
             if (PlayerControl.Instance.IsGrab())
             {
+                // 마우스 좌표를 받아와 위치 리스트에 추가한다.
                 Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
                 playerRb2D.velocity = Vector2.zero;
@@ -99,17 +103,18 @@ public class GameRoot : MonoBehaviour
 
                 posList.Add(mousePos);
 
-                // 마우스 왼쪽 버튼 땔 때
+                // 좌클릭 땔 때 (던지는 순간)
                 if (Input.GetMouseButtonUp(0))
                 {
                     playerRb2D.freezeRotation = false;
 
                     throwTime = 0;
-                    Vector2 minPos = findMinPos(posList);
+                    Vector2 minPos = FindStartPos(posList);
                     Vector2 lastPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
                     // 던지는 방향 벡터 계산
                     Vector2 throwVector = lastPos - minPos;
+                    // 던지는 힘 (기본 값 50)
                     float throwPower = PlayerControl.Instance.GetPlayerInfo().GetThrowPower();
                     // 던진 시간이 짧을 수록 던지는 힘이 강하도록
                     // 플레이어에 힘을 가한다
@@ -119,29 +124,17 @@ public class GameRoot : MonoBehaviour
                 }
             }
 
-            // 비행 상태 중
+            // 플레이어가 비행 상태일 때
             if (PlayerControl.Instance.IsFly())
             {
-                // 던지는 방향을 향하도록 플레이어를 회전시킨다.
+                // 날아가는 방향을 향하도록 플레이어를 지속적으로 회전시킨다.
                 float rotateZ = CalRotateZ(new Vector2(playerRb2D.velocity.x, playerRb2D.velocity.y));
                 player.transform.rotation = Quaternion.Euler(0f, 180f, -rotateZ);
 
+                // 만약 최고 고도 기록을 갱신하면 다시 갱신한다.
                 if (player.transform.position.y > maxAltitude)
                     maxAltitude = player.transform.position.y;
 
-                // 연료 사용 시 엔진 소리 출력
-                if (Input.GetKeyDown(KeyCode.Space) && fuelAmount > 0 &&
-                    !PlayerControl.Instance.IsMaroPush() &&
-                    releaseChichute == null)
-                {
-                    AudioManager.Instance.spaceEngineSound.Play();
-                }
-
-                // 연료를 다 사용하면 소리 중지
-                if (fuelAmount <= 0)
-                {
-                    AudioManager.Instance.spaceEngineSound.Stop();
-                }
 
                 // 스페이스를 누르면 연료 사용
                 if (Input.GetKey(KeyCode.Space) &&
@@ -158,12 +151,17 @@ public class GameRoot : MonoBehaviour
 
                     fuelAmount -= Time.deltaTime * 100f;
                     ChangeFuelGageAmount(fuelAmount / 100);
+                    // 연료 사용 소리 재생
+                    AudioManager.Instance.spaceEngineSound.Play();
                 }
 
                 // 연료 사용을 멈추면 소리 off
-                if (Input.GetKeyUp(KeyCode.Space))
+                if (Input.GetKeyUp(KeyCode.Space) || fuelAmount <= 0)
+                {
                     AudioManager.Instance.spaceEngineSound.Stop();
+                }
 
+                // 왼쪽 Control 키를 누르면 부스터
                 if (Input.GetKey(KeyCode.LeftControl) &&
                     boosterCount > 0)
                 {
@@ -179,8 +177,9 @@ public class GameRoot : MonoBehaviour
                     StartCoroutine(releaseChichute);
                 }
 
-                // 고도 5,000m 이상일 때 게임 클리어
-                if (player.transform.position.y >= 1000)
+                // 고도 제한 시 고도 5,000m 이상일 때 게임 클리어
+                if (DataManager.Instance.playerData.altitudeLimit &&
+                    player.transform.position.y >= 1002.765f)
                 {
                     PlayerControl.Instance.BeginStop();
                     SetGameEnded(true);
@@ -188,10 +187,11 @@ public class GameRoot : MonoBehaviour
 
                 // 땅에 떨어지면
                 if (PlayerControl.Instance.isOnGround)
+                    // 플레이어가 착륙 상태로 변경된다.
                     PlayerControl.Instance.BeginLand();
             }
 
-            // 땅에 떨어졌다면
+            // 플레이어가 착륙 상태라면
             if (PlayerControl.Instance.IsLand())
             {
                 // 잠깐 물리 법칙을 제거하고 강제로 똑바로 서게 끔 조정한다.
@@ -208,24 +208,30 @@ public class GameRoot : MonoBehaviour
                 // 우주선이 멈췄다면
                 if (playerRb2D.velocity == Vector2.zero)
                 {
+                    // 플레이어가 정지 상태로 변경된다.
                     PlayerControl.Instance.BeginStop();
+                    // 게임 오버
                     SetGameEnded(true);
                 }
             }
         }
     }
 
-    Vector2 findMinPos(List<Vector2> posList)
+    // 던질 때 힘이 최대로 적용될 수 있는 시작점을 찾는다.
+    Vector2 FindStartPos(List<Vector2> posList)
     {
         Vector2 mPos = Vector2.zero;
         int lastNum = posList.Count;
 
+        // 벡터 리스트의 맨 뒤부터 탐색을 시작한다.
+        // 던지는 순간 -> 처음 잡혔을 때의 위치 순서로 탐색
         for (int i = lastNum - 1; i > 0; i--)
         {
             throwTime++;
-
+            // 현재 탐색 중인 x, y 위치 값이 이전 위치 값보다 작다면
             if (posList[i - 1].x > posList[i].x && posList[i - 1].y > posList[i].y)
             {
+                // 힘이 작용되는 시작점을 정한다.
                 mPos = posList[i];
                 break;
             }
@@ -235,17 +241,23 @@ public class GameRoot : MonoBehaviour
         return mPos;
     }
 
+    // 닭 낙하산을 펼치는 코루틴 함수
     private IEnumerator ReleaseChichute()
     {
+        // 닭 낙하산 사용 횟수를 차감한다.
         chichuteCount--;
+        // 닭 낙하산 오브젝트를 보이게 변경
         chichute.SetActive(true);
-        float velocity_y = 0f;
+        float velocity_y = 0f;  // y축 속도
 
         AudioManager.Instance.chicuteSound.Play();
 
-        for (int i = 0; i < 300; i++)
+        // 400프레임 동안 지속한다.
+        for (int i = 0; i < 400; i++)
         {
+            // 현재 플레이어의 y축 속도를 점점 감소시킨다.
             velocity_y = playerRb2D.velocity.y * 0.98f;
+            // x축 방향으로 힘을 조금씩 가해 가속을 준다.
             playerRb2D.AddForce(new Vector2(4.0f, 0f));
             playerRb2D.velocity = new Vector2 (playerRb2D.velocity.x, velocity_y);
             yield return new WaitForSeconds(0.001f);
@@ -272,12 +284,28 @@ public class GameRoot : MonoBehaviour
         return f;
     }
 
-    void ChangeFuelGageAmount(float amount)
+    public void SetFuelAmount(float amount)
+        {
+            if (amount >= 100f)
+                amount = 100f;
+
+            this.fuelAmount = amount;
+        }
+
+    public float GetFuelAmount()
+    {
+        return this.fuelAmount;
+    }
+
+    public void ChangeFuelGageAmount(float amount)
     {
         fuelGage.fillAmount = amount;
 
         if (fuelGage.fillAmount <= 0f)
             fuelGage.fillAmount = 0f;
+
+        if (fuelGage.fillAmount >= 1f)
+            fuelGage.fillAmount = 1f;
     }
     
     public void SetGameEnded(bool end)

@@ -9,7 +9,7 @@ public class AirDragUpgradeInfo : UpgradeInfo
     {
         SetName("유선형 모델");
         SetDetail("받는 공기 저항이 30% 감소합니다.");
-        SetPrice(500f);
+        SetPrice(1000f);
     }
 }
 

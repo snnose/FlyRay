@@ -8,8 +8,8 @@ public class WeightUpgradeInfo : UpgradeInfo
     public WeightUpgradeInfo()
     {
         SetName("무게 감소");
-        SetDetail("우주선의 무게가 50% 감소합니다.");
-        SetPrice(5000f);
+        SetDetail("우주선의 무게가 25% 감소합니다.");
+        SetPrice(3500f);
     }
 }
 

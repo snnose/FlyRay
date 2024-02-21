@@ -39,6 +39,7 @@ public class PlayerData
     // 환경 설정 값
     public float BGMValue;
     public float effectValue;
+    public bool altitudeLimit;
 }
 
 public class DataManager : MonoBehaviour
@@ -159,6 +160,7 @@ public class DataManager : MonoBehaviour
         // 환경설정
         playerData.BGMValue = 1f;
         playerData.effectValue = 1f;
+        playerData.altitudeLimit = false;
     }
 
     // 업그레이드 초기화

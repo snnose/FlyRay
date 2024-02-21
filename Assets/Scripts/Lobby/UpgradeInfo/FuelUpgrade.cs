@@ -8,8 +8,8 @@ public class FuelUpgradeInfo : UpgradeInfo
     public FuelUpgradeInfo()
     {
         SetName("고급 연료");
-        SetDetail("연료 효율이 50% 증가합니다.");
-        SetPrice(300f);
+        SetDetail("연료 효율이 20% 증가합니다.");
+        SetPrice(1500f);
     }
 }
 

@@ -91,6 +91,22 @@ public class UIControl : MonoBehaviour
         resultUIControl.calculate.text = "\n(" + waffleAmount * 5 + " + " + dis + " x 0.06) x "
                                             + (1 + Mathf.Ceil((Mathf.Ceil(altitude) / 50000) * 100) / 100);
 
+        if (dis > DataManager.Instance.playerData.maxDistance)
+        {
+            string text = " (이전 최고 기록 : " +
+                            DataManager.Instance.playerData.maxDistance + "m)";
+            resultUIControl.distanceNewRecord.text += text;
+            resultUIControl.distanceNewRecord.alpha = 255f;
+        }
+
+        if (altitude > DataManager.Instance.playerData.maxAltitude)
+        {
+            string text = " (이전 최고 기록 : " +
+                            DataManager.Instance.playerData.maxAltitude + "m)";
+            resultUIControl.altitudeNewRecord.text += text;
+            resultUIControl.altitudeNewRecord.alpha = 255f;
+        }
+
         if (altitude >= 5000f)
         {
             resultUIControl.calculate.text += " + 100";

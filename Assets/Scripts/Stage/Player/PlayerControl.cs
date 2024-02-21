@@ -55,7 +55,7 @@ public class PlayerInfo
     public void SetFuelPower(float fuelPower)
     {
         if (DataManager.Instance.playerData.fuelUpgrade == 1)
-            fuelPower *= 1.5f;
+            fuelPower *= 1.2f;
 
         this.fuelPower = fuelPower;
     }
@@ -170,7 +170,7 @@ public class PlayerControl : MonoBehaviour
         trumpetForce = trumpetForce + (0.5f * DataManager.Instance.playerData.trumpetUpgrade);
 
         if (DataManager.Instance.playerData.weightUpgrade == 1)
-            playerRb2D.mass *= 0.5f;
+            playerRb2D.mass *= 0.75f;
 
         playerAirDrag -= (0.09f * DataManager.Instance.playerData.airdragUpgrade);
         playerRb2D.drag = playerAirDrag;
@@ -269,47 +269,64 @@ public class PlayerControl : MonoBehaviour
     // 오브젝트 충돌 시 처리
     private void OnTriggerEnter2D(Collider2D collider)
     {
+        // 비행 상태 혹은 착륙 상태 중일 때
         if (this.currState == PlayerInfo.state.FLIED ||
             this.currState == PlayerInfo.state.LANDED)
         {
+            // 와플과 충돌하는 경우
             if (collider.gameObject.CompareTag("Waffle"))
             {
                 playerInfo.GainWaffle(); // 얻은 와플 수 + 1
                 AudioManager.Instance.waffleSound.Play();
+
+                // 연료를 12.5% 충전한다
+                float fuel = GameRoot.Instance.GetFuelAmount();
+                if (fuel < 100f)
+                {
+                    GameRoot.Instance.SetFuelAmount(fuel + 12.5f);
+                    GameRoot.Instance.ChangeFuelGageAmount(fuel * 0.01f + 0.125f);
+                }
                 Destroy(collider.gameObject);
             }
+            // 마로와 충돌하는 경우
             else if (collider.gameObject.CompareTag("Maro"))
             {
                 GameObject maro = collider.gameObject;
+                // 닭 낙하산 사용 중에 충돌했다면
                 if (GameRoot.Instance.GetChichuteCoroutine() != null)
                 {
+                    // 닭 낙하산 코루틴을 중지한다.
                     StopCoroutine(GameRoot.Instance.GetChichuteCoroutine());
                     GameRoot.Instance.GetChichute().SetActive(false);
                 }
 
+                // 마로 코루틴이 진행 중이 아니라면 코루틴 실행
                 if (!maroTrigger)
                 {
                     maroPush = MaroPush(maro);
                     StartCoroutine(maroPush);
                     maroTrigger = true;
                 }
-                // 마로를 먹어 효과가 발동 중인 상태에서 또 먹을 경우 처리
+                // 마로와 충돌해 효과가 발동 중인 상태에서 다시 충돌할 때의 처리
                 else
                 {
+                    // 현재 진행 중인 코루틴을 중지하고
                     StopCoroutine(maroPush);
+                    // 새 코루틴을 넣어 다시 실행한다
                     maroPush = MaroPush(maro);
                     StartCoroutine(maroPush);
                 }
             }
+            // 트럼펫과 충돌하는 경우
             else if (collider.gameObject.CompareTag("Trumpet"))
             {
                 Destroy(collider.gameObject);
                 AudioManager.Instance.trumpetSound.Play();
 
-                // 닭하산을 펼친 상태라면
+                // 닭 낙하산 코루틴이 실행 중이라면
                 if (GameRoot.Instance.GetChichuteCoroutine() != null)
                 {
-                    // 닭하산 코루틴을 멈추고 보이지 않게 한다.
+                    // 닭 낙하산 코루틴을 중지한다
                     StopCoroutine(GameRoot.Instance.GetChichuteCoroutine());
                     GameRoot.Instance.GetChichute().SetActive(false);
                 }
@@ -317,7 +334,9 @@ public class PlayerControl : MonoBehaviour
                 // 마로가 미는 상태가 아닐 때
                 if (!maroTrigger)
                 {
+                    // 낙하하는 중에 충돌할 경우
                     if (playerRb2D.velocity.y < 0)
+                        // y축 속도를 0으로 설정한다.
                         playerRb2D.velocity = new Vector2(playerRb2D.velocity.x, 0);
                     playerRb2D.AddForce(new Vector2(20, 20) * trumpetForce, ForceMode2D.Impulse);
                 }
@@ -325,21 +344,6 @@ public class PlayerControl : MonoBehaviour
                 else
                     trumpetCount++;
             }
-            /*
-            else if (collider.gameObject.CompareTag("Chicken"))
-            {
-                Destroy(collider.gameObject);
-
-                if (playerRb2D.velocity.y < 0)
-                    playerRb2D.velocity = new Vector2(playerRb2D.velocity.x, 0);
-                playerRb2D.AddForce(new Vector2(10, 20), ForceMode2D.Impulse);
-
-                // 착륙 중에 먹으면 다시 난다.
-                this.isOnGround = false;
-                playerRb2D.freezeRotation = false;
-                BeginFly();
-            }
-            */
         }
     }
 
@@ -355,17 +359,19 @@ public class PlayerControl : MonoBehaviour
     private IEnumerator MaroPush(GameObject maro)
     {
         yield return null;
+        // 마로 애니메이션 실행
         maro.GetComponent<MaroControl>().StartPush();
         AudioManager.Instance.maroSound.Play();
         maro.transform.rotation = Quaternion.Euler(0f, 0f, -15f);
 
+        // 충돌 직전 플레이어의 속도를 저장한다.
         Vector2 currVelocity = playerRb2D.velocity;
         currVelocity.x += 10f;
+        // y축 속도를 0으로 설정하고 중력도 0으로 설정한다.
         SetVG(new Vector2(currVelocity.x, 0), 0f);
-        playerRb2D.drag = 0f;
+        playerRb2D.drag = 0f;   // 플레이어가 받는 공기 저항을 0으로 설정한다
         
-        //yield return new WaitForSeconds(2f);
-        
+        // 마로의 위치를 지속적으로 수정해준다
         for (int i = 0; i < 300; i++)
         {
             Vector2 player_pos = player.transform.position;
@@ -373,9 +379,11 @@ public class PlayerControl : MonoBehaviour
             yield return new WaitForSeconds(0.001f);
         }
         
+        // 일정 시간이 지나면 원래의 속도와 중력으로 되돌린다.
         SetVG(currVelocity, 1f);
         playerRb2D.drag = playerAirDrag;
 
+        // 마지막으로 플레이어에 힘을 가한다.
         Vector2 Force = new Vector2(20f, 20f) * maroThrowForce + new Vector2(20f, 20f) * trumpetCount;
         playerRb2D.AddForce(Force, ForceMode2D.Impulse);
         maroTrigger = false;

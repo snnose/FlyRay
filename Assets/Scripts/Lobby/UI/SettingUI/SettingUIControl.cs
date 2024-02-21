@@ -16,6 +16,8 @@ public class SettingUIControl : MonoBehaviour
     public TextMeshProUGUI BGMText;
     public TextMeshProUGUI effectText;
 
+    public Toggle altitudeLimitToggle;
+
     private void Awake()
     {
         this.settingUI = GameObject.FindGameObjectWithTag("SettingUI");
@@ -27,7 +29,8 @@ public class SettingUIControl : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        altitudeLimitToggle.isOn =
+            DataManager.Instance.playerData.altitudeLimit;
     }
 
     // Update is called once per frame
@@ -101,5 +104,13 @@ public class SettingUIControl : MonoBehaviour
         {
             
         }
+    }
+
+    public void OnValueChangedAltitudeLimit()
+    {
+        if (altitudeLimitToggle.isOn)
+            DataManager.Instance.playerData.altitudeLimit = false;
+        else
+            DataManager.Instance.playerData.altitudeLimit = true;
     }
 }

@@ -9,7 +9,7 @@ public class MaroUpgradeInfo : UpgradeInfo
     {
         SetName("마로 강화");
         SetDetail("마로의 던지는 힘이 50% 증가합니다.");
-        SetPrice(500f);
+        SetPrice(750f);
     }
 }
 

@@ -9,7 +9,7 @@ public class BoosterUpgradeInfo : UpgradeInfo
     {
         SetName("부스터 장착");
         SetDetail("Ctrl키를 눌러 부스터를 1회 사용할 수 있습니다.");
-        SetPrice(1000f);
+        SetPrice(1500f);
     }
 }
 

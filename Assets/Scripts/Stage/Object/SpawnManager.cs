@@ -27,7 +27,7 @@ public class SpawnManager : MonoBehaviour
     {
         player = GameObject.FindGameObjectWithTag("Player");
 
-        spawnInterval = new List<float>(new float[] { 0.1f , 0.75f, 0.75f});
+        spawnInterval = new List<float>(new float[] { 0.1f , 2.0f, 2.0f});
 
         yScreenHalfSize = Camera.main.orthographicSize;
         xScreenHalfSize = yScreenHalfSize * Camera.main.aspect;
@@ -51,7 +51,7 @@ public class SpawnManager : MonoBehaviour
                 StartCoroutine(spawnMaro);
             }
 
-            if (DataManager.Instance.playerData.main2)
+            if (DataManager.Instance.playerData.main3)
             {
                 StartCoroutine(spawnTrumpet);
             }
@@ -74,7 +74,8 @@ public class SpawnManager : MonoBehaviour
     {
         while (!GameRoot.Instance.IsGameEnded())
         {
-            float xSpawnPos = player.transform.position.x + Random.Range(5, 50);
+            float xSpawnPos = player.transform.position.x +
+                                xScreenHalfSize * 2 + Random.Range(1, 50);
             float ySpawnPos = player.transform.position.y +
                                 Random.Range(-25, 25);
 

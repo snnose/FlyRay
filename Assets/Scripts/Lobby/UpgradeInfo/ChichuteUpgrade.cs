@@ -9,7 +9,7 @@ public class ChichuteUpgradeInfo : UpgradeInfo
     {
         SetName("닭하산 장착");
         SetDetail("하강 중 X키를 누르면 천천히 하강합니다.");
-        SetPrice(500f);
+        SetPrice(1000f);
     }
 }
 

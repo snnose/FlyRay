@@ -9,7 +9,7 @@ public class TrumpetUpgradeInfo : UpgradeInfo
     {
         SetName("나팔 강화");
         SetDetail("나팔 효과가 50% 증가합니다.");
-        SetPrice(500f);
+        SetPrice(1000f);
     }
 }
 
